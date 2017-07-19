@@ -5,10 +5,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
+
 public class Main_Window extends JFrame{
 
     private Dimension MAIN_DIMENSION = new Dimension(200,200);
     private final JList<String> contactList = new JList<String>();
+    private final JPopupMenu listPopup = new JPopupMenu();
+    private final JMenuItem del = new JMenuItem("Delete");
 
     public Main_Window() throws HeadlessException {
         this.setTitle("Main Window");
@@ -22,6 +27,17 @@ public class Main_Window extends JFrame{
         this.fillPanel(mainpanel);
         this.add(mainpanel);
         setVisible(true);
+
+        listPopup.add(new JMenuItem("Change..."));
+        listPopup.add(del);
+
+        del.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Catalog.getInstance().delContact(contactList.getSelectedValue());
+                fillList();
+            }
+        });
     }
 
     private void fillList()
@@ -37,14 +53,20 @@ public class Main_Window extends JFrame{
         contactList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String s = contactList.getSelectedValue();
-                Contact tempCon = Catalog.getInstance().getContactByName(contactList.getSelectedValue());
-                info.setText(tempCon.getName() +" " + tempCon.getPh_number() +" "+ tempCon.getGroup()+ " ");
-                info.setVisible(true);
+                if (isLeftMouseButton(e)) {
+                    Contact tempCon = Catalog.getInstance().getContactByName(contactList.getSelectedValue());
+                    info.setText(tempCon.getName() + " " + tempCon.getPh_number() + " " + tempCon.getGroup() + " ");
+                    info.setVisible(true);
+                }
             }
             @Override
             public void mousePressed(MouseEvent e) {
+                if (isRightMouseButton(e))
+                {
+                    if (contactList.getSelectedValue() != null)
+                    listPopup.show(contactList,0,0);
 
+                }
             }
             @Override
             public void mouseReleased(MouseEvent e) {

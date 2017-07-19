@@ -4,9 +4,14 @@ import java.util.ArrayList;
  * Created by Iks on 19.07.2017.
  */
 public class Catalog {
-    private static Catalog ourInstance = new Catalog();
+    private static Catalog ourInstance;
 
     public static Catalog getInstance() {
+        if (ourInstance == null)
+            synchronized (Catalog.class) {
+                if (ourInstance == null)
+                    ourInstance = new Catalog();
+            }
         return ourInstance;
     }
 
@@ -40,5 +45,14 @@ public class Catalog {
             if (contact1.getName().equals(selectedValue))
                 contact = contact1;
         return contact;
+    }
+
+    public void delContact(String selectedValue) {
+        Contact contact = null;
+        for (Contact contact1 : contacts)
+            if (contact1.getName().equals(selectedValue))
+               contact = contact1;
+        if (contact != null)
+            contacts.remove(contact);
     }
 }
