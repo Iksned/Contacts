@@ -3,6 +3,7 @@ package conview;
 import ConModel.Catalog;
 import ConModel.Contact;
 import ConModel.Utilits;
+import concontrol.CatController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,15 +17,16 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class Main_Window extends JFrame{
 
-    private Catalog mainCatalog;
     private Dimension MAIN_DIMENSION = new Dimension(200,200);
     private final JList<String> contactList = new JList<String>();
     private final JPopupMenu listPopup = new JPopupMenu();
-    private final JMenuItem del = new JMenuItem("Delete contact");
-    private final JMenuItem change = new JMenuItem("Change contact");
 
-    public Main_Window(Catalog catalog) throws HeadlessException {
-        mainCatalog = catalog;
+    private JLabel info = new JLabel();
+    private Catalog mainCatalog = Catalog.getInstance();
+    private CatController controller = new CatController(mainCatalog,info);
+
+    public Main_Window() throws HeadlessException {
+
         this.setTitle("Main Window");
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setPreferredSize(MAIN_DIMENSION);
@@ -37,7 +39,9 @@ public class Main_Window extends JFrame{
         this.add(mainpanel);
         setVisible(true);
 
+        JMenuItem change = new JMenuItem("Change contact");
         listPopup.add(change);
+        JMenuItem del = new JMenuItem("Delete contact");
         listPopup.add(del);
 
         change.addActionListener(new ActionListener() {
@@ -47,11 +51,10 @@ public class Main_Window extends JFrame{
             }
         });
 
-        Catalog finalCatalog = catalog;
         del.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                finalCatalog.delContact(contactList.getSelectedValue());
+                controller.removeContact(contactList.getSelectedValue());
                 fillList();
             }
         });
@@ -59,11 +62,10 @@ public class Main_Window extends JFrame{
 
     private void fillList()
     {
-        contactList.setListData(mainCatalog.getNames());
+        contactList.setListData(controller.getNames());
     }
 
     private void fillPanel(JPanel mainpan) {
-        JLabel info = new JLabel();
         contactList.setPreferredSize(new Dimension(100, 10));
         contactList.setLayoutOrientation(JList.VERTICAL);
         contactList.setVisibleRowCount(0);
@@ -71,9 +73,7 @@ public class Main_Window extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (isLeftMouseButton(e)) {
-                    Contact tempCon = mainCatalog.getContactByName(contactList.getSelectedValue());
-                    info.setText(tempCon.getName() + " " + tempCon.getPh_number() + " " + tempCon.getGroup() + " ");
-                    info.setVisible(true);
+                    controller.updateInfo(controller.getContactByName(contactList.getSelectedValue()));
                 }
             }
             @Override
@@ -104,7 +104,7 @@ public class Main_Window extends JFrame{
         exitButton.setPreferredSize(new Dimension(50, 20));
         exitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Utilits.SaveCat(mainCatalog);
+                Utilits.SaveCat(controller.getCatalog());
                 System.exit(0);
             }
         });
@@ -141,14 +141,14 @@ public class Main_Window extends JFrame{
             this.setBounds(500,500,200,200);
             JPanel mainpanel = new JPanel();
             mainpanel.setLayout(new GridLayout(4,2));
-            this.fillPanel(mainpanel);
+            this.fillPanel(mainpanel,controller);
             this.add(mainpanel);
             this.validate();
             this.pack();
             this.setVisible(true);
         }
 
-        private void fillPanel(JPanel mainpan) {
+        private void fillPanel(JPanel mainpan,CatController catController) {
             final JTextField nameAdd = new JTextField();
             nameAdd.setPreferredSize(new Dimension(70, 20));
             final JTextField phNumbertAdd = new JTextField();
@@ -181,7 +181,7 @@ public class Main_Window extends JFrame{
 
                     if (new_Con != null)
                     {
-                        mainCatalog.addContact(new_Con);
+                        catController.addContact(new_Con);
                         fillList();
                         setVisible(false);
                     }

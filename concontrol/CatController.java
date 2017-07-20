@@ -2,28 +2,48 @@ package concontrol;
 
 import ConModel.Catalog;
 import ConModel.Contact;
-import conview.View;
+
+
+import javax.swing.*;
 
 public class CatController {
 
     private Catalog catalog;
-    private View view;
 
-    public CatController(Catalog catalog, View view) {
+    private JLabel label;
 
+    public CatController(Catalog catalog, JLabel label) {
         this.catalog = catalog;
-        this.view = view;
+        this.label = label;
     }
 
-    public void AddContact(Contact contact)
+    public void addContact(Contact contact)
     {
         catalog.addContact(contact);
     }
 
-    public void ShowWindow()
+    public void removeContact(String contact)
     {
-        view.createWindow(catalog);
+        catalog.delContact(contact);
+    }
+
+    public void updateInfo(Contact tempCon)
+    {
+        label.setText(tempCon.getName() + " " + tempCon.getPh_number() + " " + tempCon.getGroup() + " ");
+        label.setVisible(true);
     }
 
 
+    public Contact getContactByName(String selectedValue) {
+        return catalog.getContactByName(selectedValue);
+    }
+
+    public String[] getNames() {
+        return catalog.getNames();
+    }
+
+    public Catalog getCatalog()
+    {
+        return catalog;
+    }
 }
