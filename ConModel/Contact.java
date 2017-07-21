@@ -8,7 +8,7 @@ public class Contact implements Serializable{
     private String ph_number;
     private String group;
 
-    public Contact(String name) {
+    Contact(String name) {
         this.name = name;
     }
 

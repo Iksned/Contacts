@@ -1,11 +1,15 @@
 package ConModel;
 
+import concontrol.CatalogObserver;
+import concontrol.Observable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Catalog implements Serializable {
+public class Catalog implements Serializable, Observable {
     private static Catalog ourInstance;
+    private CatalogObserver observer;
 
     public static Catalog getInstance() {
         if (ourInstance == null)
@@ -19,7 +23,6 @@ public class Catalog implements Serializable {
     }
 
     private Catalog() {
-        ourInstance.addContact(new Contact("Vasia"));
     }
 
     private List<Contact> contacts = new ArrayList<Contact>();
@@ -30,6 +33,12 @@ public class Catalog implements Serializable {
 
     public void addContact(Contact contact) {
         contacts.add(contact);
+        notifyObserver();
+
+    }
+
+    public void addContact(String name,String phNumber,String group) {
+        addContact(new Contact(name,phNumber,group));
     }
 
     public String[] getNames() {
@@ -56,5 +65,15 @@ public class Catalog implements Serializable {
                contact = contact1;
         if (contact != null)
             contacts.remove(contact);
+    }
+
+    @Override
+    public void notifyObserver() {
+        observer.update();
+    }
+
+    @Override
+    public void addObserver(CatalogObserver obs) {
+        observer = obs;
     }
 }

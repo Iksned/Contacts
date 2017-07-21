@@ -3,7 +3,7 @@ package ConModel;
 import java.io.*;
 
 
-public class Utilits {
+public class Utilits { //to DAO interface
 
     public static void SaveCat(Catalog cat)
     {
@@ -30,6 +30,6 @@ public class Utilits {
         if (catalog != null)
             return catalog;
         else
-            return Catalog.getInstance();
+            return null;
     }
 }

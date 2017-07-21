@@ -1,47 +1,44 @@
 package conview;
 
-import ConModel.Catalog;
-import ConModel.Contact;
-import ConModel.Utilits;
-import concontrol.CatController;
+import concontrol.AddController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.io.Serializable;
 
-import static javax.swing.SwingUtilities.isLeftMouseButton;
-import static javax.swing.SwingUtilities.isRightMouseButton;
 
-public class Main_Window extends JFrame{
+public class Main_Window implements Serializable{
 
     private Dimension MAIN_DIMENSION = new Dimension(200,200);
-    private final JList<String> contactList = new JList<String>();
-    private final JPopupMenu listPopup = new JPopupMenu();
-
-    private JLabel info = new JLabel();
-    private Catalog mainCatalog = Catalog.getInstance();
-    private CatController controller = new CatController(mainCatalog,info);
+    private final JList<String> contactList;
+    private final JPopupMenu listPopup;
+    private final JMenuBar menuBar;
+    private JFrame mainWindow;
+    private JLabel info;
+    private JMenuItem del;
+    private JButton exitButton;
 
     public Main_Window() throws HeadlessException {
-
-        this.setTitle("Main Window");
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setPreferredSize(MAIN_DIMENSION);
-        this.setBounds(500,400,300,300);
-        final JMenuBar menuBar = fillMenuBar();
-        this.setJMenuBar(menuBar);
+        mainWindow = new JFrame();
+        mainWindow.setTitle("Main Window");
+        mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainWindow.setPreferredSize(MAIN_DIMENSION);
+        mainWindow.setBounds(500,400,300,300);
+        contactList = new JList<>();
+        menuBar = fillMenuBar();
+        listPopup = new JPopupMenu();
+        info = new JLabel();
+        mainWindow.setJMenuBar(menuBar);
         JPanel mainpanel = new JPanel();
         mainpanel.setLayout(new BorderLayout());
-        this.fillPanel(mainpanel);
-        this.add(mainpanel);
-        setVisible(true);
-
+        fillPanel(mainpanel);
+        mainWindow.add(mainpanel);
+        mainWindow.setVisible(true);
         JMenuItem change = new JMenuItem("Change contact");
         listPopup.add(change);
-        JMenuItem del = new JMenuItem("Delete contact");
+        del = new JMenuItem("Delete contact");
         listPopup.add(del);
 
         change.addActionListener(new ActionListener() {
@@ -50,64 +47,36 @@ public class Main_Window extends JFrame{
             //TODO
             }
         });
-
-        del.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.removeContact(contactList.getSelectedValue());
-                fillList();
-            }
-        });
     }
 
-    private void fillList()
+    public JMenuItem getDelMenuItem() {
+        return del;
+    }
+
+    public JList<String> getContactList() {
+        return contactList;
+    }
+
+    public JLabel getLabel() {
+        return info;
+    }
+
+    public JPopupMenu getListPopup() {
+        return listPopup;
+    }
+
+    public JButton getExitButton()
     {
-        contactList.setListData(controller.getNames());
+        return exitButton;
     }
 
     private void fillPanel(JPanel mainpan) {
         contactList.setPreferredSize(new Dimension(100, 10));
         contactList.setLayoutOrientation(JList.VERTICAL);
         contactList.setVisibleRowCount(0);
-        contactList.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (isLeftMouseButton(e)) {
-                    controller.updateInfo(controller.getContactByName(contactList.getSelectedValue()));
-                }
-            }
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (isRightMouseButton(e))
-                {
-                    if (contactList.getSelectedValue() != null)
-                    listPopup.show(contactList,0,0);
 
-                }
-            }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-        fillList();
-
-        JButton exitButton = new JButton("Close");
+        exitButton = new JButton("Close");
         exitButton.setPreferredSize(new Dimension(50, 20));
-        exitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Utilits.SaveCat(controller.getCatalog());
-                System.exit(0);
-            }
-        });
         mainpan.add(contactList,BorderLayout.WEST);
         mainpan.add(exitButton,BorderLayout.SOUTH);
         mainpan.add(info,BorderLayout.EAST);
@@ -133,25 +102,19 @@ public class Main_Window extends JFrame{
 
 
 
-    public class AddContactFrame extends JFrame {
+    public class AddContactFrame extends JFrame{
 
-        public AddContactFrame() throws HeadlessException {
-            this.setTitle("Add contact");
-            this.setPreferredSize(MAIN_DIMENSION);
-            this.setBounds(500,500,200,200);
-            JPanel mainpanel = new JPanel();
-            mainpanel.setLayout(new GridLayout(4,2));
-            this.fillPanel(mainpanel,controller);
-            this.add(mainpanel);
-            this.validate();
-            this.pack();
-            this.setVisible(true);
-        }
+        private JButton okButton;
+        private JTextField nameAdd;
+        private JTextField  phNumbertAdd;
+        private JComboBox groupAdd;
 
-        private void fillPanel(JPanel mainpan,CatController catController) {
-            final JTextField nameAdd = new JTextField();
+        AddContactFrame() throws HeadlessException {
+            AddController addController = new AddController(this);
+            okButton = new JButton("Ok");
+            nameAdd = new JTextField();
             nameAdd.setPreferredSize(new Dimension(70, 20));
-            final JTextField phNumbertAdd = new JTextField();
+            phNumbertAdd = new JTextField();
             phNumbertAdd.setPreferredSize(new Dimension(70, 20));
             //Test items
             String[] items = {
@@ -160,31 +123,45 @@ public class Main_Window extends JFrame{
                     "Group 2",
                     "Group 3"
             };
-            final JComboBox groupAdd = new JComboBox(items);
+            groupAdd = new JComboBox(items);
             groupAdd.setPreferredSize(new Dimension(70, 20));
+            this.setTitle("Add contact");
+            this.setPreferredSize(MAIN_DIMENSION);
+            this.setBounds(500,500,200,200);
+            JPanel mainpanel = new JPanel();
+            mainpanel.setLayout(new GridLayout(4,2));
+            this.fillPanel(mainpanel);
+            this.add(mainpanel);
+            this.validate();
+            this.pack();
+            this.setVisible(true);
+            addController.initController();
+         }
+
+        public JButton getOkButton() {
+            return okButton;
+        }
+
+        public JTextField getNameAdd() {
+            return nameAdd;
+        }
+
+        public JTextField getPhNumbertAdd() {
+            return phNumbertAdd;
+        }
+
+        public JComboBox getGroupAdd() {
+            return groupAdd;
+        }
+
+        private void fillPanel(JPanel mainpan) {
             final JLabel nameLab = new JLabel("Name");
             final JLabel phLab = new JLabel("Phone Number");
             final JLabel groupLab = new JLabel("Group");
-            JButton exitButton = new JButton("Ok");
-            exitButton.setPreferredSize(new Dimension(50, 20));
-            exitButton.addActionListener(new ActionListener() {
+            okButton.setPreferredSize(new Dimension(50, 20));
+            okButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    Contact new_Con = null;
-                    //noinspection Since15
-                    if (!nameAdd.getText().isEmpty() & !phNumbertAdd.getText().isEmpty())
-                        try {
-                            Integer.parseInt(phNumbertAdd.getText());
-                            new_Con = new Contact(nameAdd.getText(),(phNumbertAdd.getText()),(String)groupAdd.getSelectedItem());
-                        }
-                        catch (NumberFormatException e1)
-                        {}
 
-                    if (new_Con != null)
-                    {
-                        catController.addContact(new_Con);
-                        fillList();
-                        setVisible(false);
-                    }
                 }
             });
             mainpan.add(nameAdd);
@@ -193,7 +170,7 @@ public class Main_Window extends JFrame{
             mainpan.add(phLab);
             mainpan.add(groupAdd);
             mainpan.add(groupLab);
-            mainpan.add(exitButton);
+            mainpan.add(okButton);
         }
     }
 
