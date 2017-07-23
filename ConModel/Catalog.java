@@ -15,7 +15,7 @@ public class Catalog implements Serializable, Observable {
         if (ourInstance == null)
             synchronized (Catalog.class) {
                 if (ourInstance == null)
-                    ourInstance = Utilits.LoadCat();
+                    ourInstance = new CatDaoCloud().LoadCat();
                 if (ourInstance == null)
                     ourInstance = new Catalog();
             }
@@ -23,9 +23,23 @@ public class Catalog implements Serializable, Observable {
     }
 
     private Catalog() {
+        groups.add("Group1");
+        groups.add("Group2");
+        groups.add("Group3");
     }
 
     private List<Contact> contacts = new ArrayList<Contact>();
+    private List<String> groups = new ArrayList<String>();
+
+    public List<String> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
+    }
+
+
 
     public List<Contact> getContacts() {
         return contacts;
@@ -63,8 +77,22 @@ public class Catalog implements Serializable, Observable {
         for (Contact contact1 : contacts)
             if (contact1.getName().equals(selectedValue))
                contact = contact1;
-        if (contact != null)
+        if (contact != null) {
             contacts.remove(contact);
+            notifyObserver();
+        }
+    }
+
+    public void updateContact(Contact contact,String name,String phNumber,String group)
+    {
+        for (Contact contact1: contacts)
+            if (contact1.equals(contact)) {
+                    contact1.setName(name);
+                    contact1.setPh_number(phNumber);
+                    contact1.setGroup(group);
+                    notifyObserver();
+            }
+
     }
 
     @Override
@@ -73,7 +101,17 @@ public class Catalog implements Serializable, Observable {
     }
 
     @Override
-    public void addObserver(CatalogObserver obs) {
+    public void registerObserver(CatalogObserver obs) {
         observer = obs;
+    }
+
+    public String[] getNamesByGroup(String group) {
+        String[] names = new String[contacts.size()];
+        for (int i = 0;i<contacts.size();i++)
+        {
+            if(contacts.get(i).getGroup().equals(group))
+            names[i]=contacts.get(i).getName();
+        }
+        return names;
     }
 }

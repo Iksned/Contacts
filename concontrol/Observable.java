@@ -3,5 +3,5 @@ package concontrol;
 public interface Observable {
 
     public void notifyObserver();
-    public void addObserver(CatalogObserver obs);
+    public void registerObserver(CatalogObserver obs);
 }

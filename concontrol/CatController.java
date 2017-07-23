@@ -2,63 +2,24 @@ package concontrol;
 
 import ConModel.Catalog;
 import ConModel.Contact;
-import ConModel.Utilits;
-import conview.Main_Window;
+import conview.View;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.Serializable;
+import java.util.List;
 
-import static javax.swing.SwingUtilities.isLeftMouseButton;
-import static javax.swing.SwingUtilities.isRightMouseButton;
-
-public class CatController implements CatalogObserver,Serializable { // to interface
+public class CatController implements Serializable { // to interface
 
     private Catalog catalog;
-    private Main_Window main_window;
+    private View view;
 
-    public CatController(Catalog catalog, Main_Window frame) {
+    public CatController(Catalog catalog) {
         this.catalog = catalog;
-        this.main_window = frame;
-        catalog.addObserver(this);
-        fillList();
     }
 
-    public void initController()
-    {
-        main_window.getDelMenuItem().addActionListener(e -> deletoFromList());
-        main_window.getExitButton().addActionListener(e -> savenexit());
-        main_window.getContactList().addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                listSel(e);
-            }
-            @Override
-            public void mousePressed(MouseEvent e) {
-                invokePopup(e);
-            }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-    }
+    public CatController(Catalog catalog, View view) {
+        this.catalog = catalog;
+        this.view = view;
 
-    private void savenexit() {
-        Utilits.SaveCat(catalog);
-        System.exit(0);
-    }
-
-    private void invokePopup(MouseEvent e) {
-        if (isRightMouseButton(e)) {
-            if (main_window.getContactList().getSelectedValue() != null)
-                main_window.getListPopup().show(main_window.getContactList(),0,0);
-        }
     }
 
     public void addContact(Contact contact)
@@ -66,30 +27,27 @@ public class CatController implements CatalogObserver,Serializable { // to inter
         catalog.addContact(contact);
     }
 
+    public void addContact(String name,String ph,String group)
+    {
+        addContact(new Contact(name,ph,group));
+    }
+
     public void removeContact(String contact)
     {
         catalog.delContact(contact);
     }
 
-    private String updateInfo(Contact tempCon) {
-        return (tempCon.getName() + " " + tempCon.getPh_number() + " " + tempCon.getGroup() + " ");
-    }
-
-    private void deletoFromList() {
-            removeContact(main_window.getContactList().getSelectedValue());
-            fillList();
-    }
-
-    private void fillList() {
-        main_window.getContactList().setListData(getNames());
-    }
-
-    private Contact getContactByName(String selectedValue) {
+    public Contact getContactByName(String selectedValue) {
         return catalog.getContactByName(selectedValue);
     }
 
-    private String[] getNames() {
+    public String[] getNames() {
         return catalog.getNames();
+    }
+
+    public String[] getNamesByGruop(String group)
+    {
+        return catalog.getNamesByGroup(group);
     }
 
     public Catalog getCatalog()
@@ -97,14 +55,13 @@ public class CatController implements CatalogObserver,Serializable { // to inter
         return catalog;
     }
 
-    private void listSel(MouseEvent e) {
-        if (isLeftMouseButton(e)) {
-            main_window.getLabel().setText(updateInfo(getContactByName(main_window.getContactList().getSelectedValue())));
-        }
+
+    public void updateContact(Contact contact,String name, String phnumber, String group) {
+        catalog.updateContact(contact,name,phnumber,group);
     }
 
-    @Override
-    public void update() {
-        fillList();
+    public List<String> getGroups()
+    {
+        return catalog.getGroups();
     }
 }

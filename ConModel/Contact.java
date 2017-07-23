@@ -1,12 +1,15 @@
 package ConModel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Contact implements Serializable{
     private String name;
     private String ph_number;
     private String group;
+    private List<String> contactGroups;
 
     Contact(String name) {
         this.name = name;
@@ -16,6 +19,7 @@ public class Contact implements Serializable{
         this.name = name;
         this.ph_number = ph_number;
         this.group = group;
+        contactGroups = new ArrayList<>();
     }
 
     public String getName() {
@@ -41,4 +45,6 @@ public class Contact implements Serializable{
     public void setGroup(String group) {
         this.group = group;
     }
+
+
 }
