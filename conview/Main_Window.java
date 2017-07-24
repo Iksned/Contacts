@@ -233,11 +233,6 @@ public class Main_Window implements View,Serializable{
             final JLabel phLab = new JLabel("Phone Number");
             final JLabel groupLab = new JLabel("Group");
             okButton.setPreferredSize(new Dimension(50, 20));
-            okButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-
-                }
-            });
             mainpan.add(nameAdd);
             mainpan.add(nameLab);
             mainpan.add(phNumbertAdd);
@@ -377,22 +372,27 @@ public class Main_Window implements View,Serializable{
             String newSt = groupToAdd.getText();
             if (!newSt.equals("")) {
                 mainController.updateGroup(oldSt, newSt);
-                if (oldSt != null)
+                if (oldSt != null) {
                     tabbedPane.setTitleAt(getTabNumber(oldSt), newSt);
-                for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(newSt)).getComponentAt(0, 0))).getComponentCount(); i++) {
-                    Contact contact = mainController.getContactByName(mainController.getNamesByGruop(oldSt)[i]);
-                    mainController.updateContact(contact, contact.getName(), contact.getPh_number(), newSt);
+                    if (((JList<String>) (tabbedPane.getComponent(getTabNumber(newSt)).getComponentAt(0, 0))).getComponentCount() > 1)
+                        for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(newSt)).getComponentAt(0, 0))).getComponentCount(); i++) {
+                            Contact contact = mainController.getContactByName(mainController.getNamesByGruop(oldSt)[i]);
+                            mainController.updateContact(contact, contact.getName(), contact.getPh_number(), newSt);
+                        }
+                    updateGroupList();
                 }
-                updateGroupList();
             }
         }
 
         private void delGroup() {
             String groupToDel = groups.getSelectedValue();
             mainController.delGroup(groupToDel);
-            for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount(); i++) {
-                Contact contact = mainController.getContactByName(mainController.getNamesByGruop(groupToDel)[i]);
-                mainController.updateContact(contact, contact.getName(), contact.getPh_number(),"");
+            if (((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount() > 1) {
+                int f = ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount();
+                for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount(); i++) {
+                    Contact contact = mainController.getContactByName(mainController.getNamesByGruop(groupToDel)[i]);
+                    mainController.updateContact(contact, contact.getName(), contact.getPh_number(), "");
+                }
             }
             updateGroupList();
             tabbedPane.remove(getPanel(groupToDel));

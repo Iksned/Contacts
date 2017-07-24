@@ -46,5 +46,23 @@ public class Contact implements Serializable{
         this.group = group;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Contact contact = (Contact) o;
+
+        if (!name.equals(contact.name)) return false;
+        if (!ph_number.equals(contact.ph_number)) return false;
+        return contactGroups != null ? contactGroups.equals(contact.contactGroups) : contact.contactGroups == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + ph_number.hashCode();
+        result = 31 * result + (contactGroups != null ? contactGroups.hashCode() : 0);
+        return result;
+    }
 }
