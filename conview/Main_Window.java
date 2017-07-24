@@ -73,11 +73,22 @@ public class Main_Window implements View,Serializable{
 
     private void fillPanel(JPanel mainpan,String group) {
         JList<String> contactList = new JList<>();
-        JLabel info;
+        JLabel infoName;
+        JLabel infoPhone;
+        JLabel infoGroup;
         contactList.setPreferredSize(new Dimension(100, 10));
         contactList.setLayoutOrientation(JList.VERTICAL);
         contactList.setVisibleRowCount(0);
-        info = new JLabel();
+        //TODO set labels
+        infoName = new JLabel();
+        infoPhone = new JLabel();
+        infoGroup = new JLabel();
+        GridLayout labLayout = new GridLayout(3,1);
+        JPanel eastPanel = new JPanel();
+        eastPanel.setLayout(labLayout);
+        eastPanel.add(infoName);
+        eastPanel.add(infoPhone);
+        eastPanel.add(infoGroup);
         listPopup= new JPopupMenu();
         JMenuItem change = new JMenuItem("Change contact");
         listPopup.add(change);
@@ -98,7 +109,7 @@ public class Main_Window implements View,Serializable{
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (isLeftMouseButton(e)) {
-                    info.setText(updateInfo(mainController.getContactByName(contactList.getSelectedValue())));
+                    infoName.setText(updateInfo(mainController.getContactByName(contactList.getSelectedValue())));
                 }
                 if (isRightMouseButton(e)) {
                     if (contactList.getSelectedValue() != null)
@@ -122,7 +133,8 @@ public class Main_Window implements View,Serializable{
         });
         mainpan.add(contactList,BorderLayout.WEST);
         mainpan.add(exitButton,BorderLayout.SOUTH);
-        mainpan.add(info,BorderLayout.EAST);
+      //  mainpan.add(infoName,BorderLayout.EAST);
+        mainpan.add(eastPanel);
         if (group.equals("0"))
             contactList.setListData(mainController.getNames());
         else
@@ -144,7 +156,15 @@ public class Main_Window implements View,Serializable{
                 new AddContactFrame();
             }
         });
+        final JMenuItem saveList = new JMenuItem("Save catalog");
+        saveList.addActionListener(e -> mainController.SaveCatalog());
+        final JMenuItem exit = new JMenuItem("Exit");
+        exit.addActionListener(e -> {
+            mainController.SaveCatalog();
+            System.exit(0);});
         mainMenu.add(addContact);
+        mainMenu.add(saveList);
+        mainMenu.add(exit);
         return mainMenu;
     }
 
@@ -175,7 +195,6 @@ public class Main_Window implements View,Serializable{
             nameAdd.setPreferredSize(new Dimension(70, 20));
             phNumbertAdd = new JTextField();
             phNumbertAdd.setPreferredSize(new Dimension(70, 20));
-            //Test items
             String[] items = new String[mainController.getGroups().size()];
             items = mainController.getGroups().toArray(items);
             groupAdd = new JComboBox(items);
@@ -246,7 +265,6 @@ public class Main_Window implements View,Serializable{
             phNumbertAdd = new JTextField();
             phNumbertAdd.setPreferredSize(new Dimension(70, 20));
             phNumbertAdd.setText(contact.getPh_number());
-            //Test items
             String[] items = new String[mainController.getGroups().size()];
             items = mainController.getGroups().toArray(items);
             groupAdd = new JComboBox(items);
@@ -309,8 +327,8 @@ public class Main_Window implements View,Serializable{
 
 
         GroupFrame() throws HeadlessException {
-            addGroupButton = new JButton("Add");
-            delGroupButton = new JButton("Delete");
+            addGroupButton = new JButton("<-- Add");
+            delGroupButton = new JButton("Delete -->");
             changeGroupButton = new JButton("Set Name <--");
             closeButton = new JButton("Close");
             groupToAdd = new JTextField();
@@ -351,22 +369,65 @@ public class Main_Window implements View,Serializable{
             this.validate();
             this.pack();
             this.setVisible(true);
+            JList<String> kl = new JList<>();
         }
 
         private void changeGroup() {
             String oldSt = groups.getSelectedValue();
-            for (String item : items) {
-                if (item.equals(oldSt))
-                    item = groupToAdd.getText();
+            String newSt = groupToAdd.getText();
+            if (!newSt.equals("")) {
+                mainController.updateGroup(oldSt, newSt);
+                if (oldSt != null)
+                    tabbedPane.setTitleAt(getTabNumber(oldSt), newSt);
+                for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(newSt)).getComponentAt(0, 0))).getComponentCount(); i++) {
+                    Contact contact = mainController.getContactByName(mainController.getNamesByGruop(oldSt)[i]);
+                    mainController.updateContact(contact, contact.getName(), contact.getPh_number(), newSt);
+                }
+                updateGroupList();
             }
-            groups.setListData(items);
         }
 
         private void delGroup() {
-
+            String groupToDel = groups.getSelectedValue();
+            mainController.delGroup(groupToDel);
+            for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount(); i++) {
+                Contact contact = mainController.getContactByName(mainController.getNamesByGruop(groupToDel)[i]);
+                mainController.updateContact(contact, contact.getName(), contact.getPh_number(),"");
+            }
+            updateGroupList();
+            tabbedPane.remove(getPanel(groupToDel));
         }
 
         private void addGroup() {
+            String newGroup = groupToAdd.getText();
+            if (!newGroup.equals("")) {
+                boolean checkForDoubles = false;
+                for (int i = 0; i < mainController.getGroups().size(); i++)
+                    if (mainController.getGroups().get(i).equals(newGroup))
+                        checkForDoubles = true;
+                if (!checkForDoubles) {
+                    mainController.addGroup(newGroup);
+                    updateGroupList();
+                    tabbedPane.add(newGroup, addGroupPanel(newGroup));
+                }
+            }
+        }
+
+        private int getTabNumber(String tabName) {
+            int panel = -1;
+            for (int i = 0;i<tabbedPane.getTabCount();i++)
+                if (tabbedPane.getTitleAt(i).equals(tabName))
+                    panel = i;
+            return panel;
+        }
+
+        private JPanel getPanel(String tabName)
+        {
+            JPanel panel = null;
+            for (int i = 0;i<tabbedPane.getTabCount();i++)
+                if (tabbedPane.getTitleAt(i).equals(tabName))
+                    panel = (JPanel) tabbedPane.getComponent(i);
+            return panel;
         }
 
         private void fillPanel(JPanel mainpan) {
@@ -381,6 +442,14 @@ public class Main_Window implements View,Serializable{
             mainpan.add(panel,BorderLayout.CENTER);
             mainpan.add(closeButton,BorderLayout.SOUTH);
         }
+
+        private void updateGroupList()
+        {
+            items = new String[mainController.getGroups().size()];
+            items = mainController.getGroups().toArray(items);
+            groups.setListData(items);
+        }
     }
+
 
 }

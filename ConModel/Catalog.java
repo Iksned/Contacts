@@ -107,11 +107,31 @@ public class Catalog implements Serializable, Observable {
 
     public String[] getNamesByGroup(String group) {
         String[] names = new String[contacts.size()];
+        int inc = 0;
         for (int i = 0;i<contacts.size();i++)
         {
-            if(contacts.get(i).getGroup().equals(group))
-            names[i]=contacts.get(i).getName();
+            if(contacts.get(i).getGroup().equals(group)) {
+                names[inc] = contacts.get(i).getName();
+                inc++;
+            }
         }
         return names;
+    }
+
+    public void delGroup(String group) {
+        groups.remove(group);
+        notifyObserver();
+    }
+
+    public void updateGroup(String oldSt, String text) {
+        for(int i =0;i<groups.size();i++)
+            if (groups.get(i).equals(oldSt))
+                groups.set(i,text);
+        notifyObserver();
+    }
+
+    public void addGroup(String newGroup) {
+        groups.add(newGroup);
+        notifyObserver();
     }
 }

@@ -1,5 +1,6 @@
 package concontrol;
 
+import ConModel.CatDaoCloud;
 import ConModel.Catalog;
 import ConModel.Contact;
 import conview.View;
@@ -20,6 +21,10 @@ public class CatController implements Serializable { // to interface
         this.catalog = catalog;
         this.view = view;
 
+    }
+
+    public void delGroup(String group) {
+        catalog.delGroup(group);
     }
 
     public void addContact(Contact contact)
@@ -63,5 +68,17 @@ public class CatController implements Serializable { // to interface
     public List<String> getGroups()
     {
         return catalog.getGroups();
+    }
+
+    public void updateGroup(String oldSt, String text) {
+        catalog.updateGroup(oldSt,text);
+    }
+
+    public void addGroup(String newGroup) {
+        catalog.addGroup(newGroup);
+    }
+
+    public void SaveCatalog() {
+        new CatDaoCloud().SaveCat(catalog);
     }
 }
