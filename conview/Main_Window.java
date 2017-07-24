@@ -2,6 +2,7 @@ package conview;
 
 import ConModel.CatDaoCloud;
 import ConModel.Contact;
+import ConModel.Group;
 import concontrol.CatController;
 
 import javax.swing.*;
@@ -36,19 +37,18 @@ public class Main_Window implements View,Serializable{
         mainWindow.setJMenuBar(menuBar);
         JPanel mainpanel = new JPanel();
         mainpanel.setLayout(new BorderLayout());
-        fillPanel(mainpanel,"0");
+        fillPanel(mainpanel,new Group("0"));
         tabbedPane.add("All",mainpanel);
         for(int i = 0;i < mainController.getGroups().size();i++) {
-           tabbedPane.add(mainController.getGroups().get(i),addGroupPanel(mainController.getGroups().get(i)));
+           tabbedPane.add(mainController.getGroups().get(i).getName(),addGroupPanel(mainController.getGroups().get(i)));
         }
         mainWindow.add(tabbedPane);
-        //mainWindow.add(mainpanel);
         mainWindow.setVisible(true);
         mainController.getCatalog().registerObserver(this);
 
     }
 
-    private JPanel addGroupPanel(String group) {
+    private JPanel addGroupPanel(Group group) {
         JPanel groupPanel = new JPanel();
         groupPanel.setLayout(new BorderLayout());
         fillPanel(groupPanel,group);
@@ -71,7 +71,7 @@ public class Main_Window implements View,Serializable{
         return (tempCon.getName() + " " + tempCon.getPh_number() + " " + tempCon.getGroup() + " ");
     }
 
-    private void fillPanel(JPanel mainpan,String group) {
+    private void fillPanel(JPanel mainpan,Group group) {
         JList<String> contactList = new JList<>();
         JLabel infoName;
         JLabel infoPhone;
@@ -136,10 +136,10 @@ public class Main_Window implements View,Serializable{
         mainpan.add(exitButton,BorderLayout.SOUTH);
       //  mainpan.add(infoName,BorderLayout.EAST);
         mainpan.add(eastPanel);
-        if (group.equals("0"))
+        if ("0".equals(group.getName()))
             contactList.setListData(mainController.getNames());
         else
-            contactList.setListData(mainController.getNamesByGruop(group));
+            contactList.setListData(mainController.getNamesByGruop(group.getName()));
     }
 
     private JMenuBar fillMenuBar() {
@@ -159,12 +159,15 @@ public class Main_Window implements View,Serializable{
         });
         final JMenuItem saveList = new JMenuItem("Save catalog");
         saveList.addActionListener(e -> mainController.saveCatalog());
+        final JMenuItem showSecondList = new JMenuItem("Show second list");
+        showSecondList.addActionListener(e -> new Second_Frame(mainController));
         final JMenuItem exit = new JMenuItem("Exit");
         exit.addActionListener(e -> {
             mainController.saveCatalog();
             System.exit(0);});
         mainMenu.add(addContact);
         mainMenu.add(saveList);
+        mainMenu.add(showSecondList);
         mainMenu.add(exit);
         return mainMenu;
     }
@@ -197,7 +200,8 @@ public class Main_Window implements View,Serializable{
             phNumbertAdd = new JTextField();
             phNumbertAdd.setPreferredSize(new Dimension(70, 20));
             String[] items = new String[mainController.getGroups().size()];
-            items = mainController.getGroups().toArray(items);
+            for (int i = 0;i<items.length;i++)
+                items[i] = mainController.getGroups().get(i).getName();
             groupAdd = new JComboBox(items);
             groupAdd.setPreferredSize(new Dimension(70, 20));
             okButton.addActionListener(e -> confimAdd());
@@ -262,7 +266,8 @@ public class Main_Window implements View,Serializable{
             phNumbertAdd.setPreferredSize(new Dimension(70, 20));
             phNumbertAdd.setText(contact.getPh_number());
             String[] items = new String[mainController.getGroups().size()];
-            items = mainController.getGroups().toArray(items);
+            for (int i = 0;i< items.length;i++)
+                items[i] = mainController.getGroups().get(i).getName();
             groupAdd = new JComboBox(items);
             groupAdd.setPreferredSize(new Dimension(70, 20));
             okButton.addActionListener(e -> confimChange());
@@ -330,7 +335,8 @@ public class Main_Window implements View,Serializable{
             groupToAdd = new JTextField();
             groupToAdd.setPreferredSize(new Dimension(70, 20));
             items = new String[mainController.getGroups().size()];
-            items = mainController.getGroups().toArray(items);
+            for (int i = 0;i<mainController.getGroups().size();i++)
+                items[i] = mainController.getGroups().get(i).getName();
             groups = new JList<>(items);
             groups.setPreferredSize(new Dimension(70, 20));
             groups.addMouseListener(new MouseListener() {
@@ -403,12 +409,12 @@ public class Main_Window implements View,Serializable{
             if (!newGroup.equals("")) {
                 boolean checkForDoubles = false;
                 for (int i = 0; i < mainController.getGroups().size(); i++)
-                    if (mainController.getGroups().get(i).equals(newGroup))
+                    if (mainController.getGroups().get(i).equals(mainController.getGroupByName(newGroup)))
                         checkForDoubles = true;
                 if (!checkForDoubles) {
                     mainController.addGroup(newGroup);
                     updateGroupList();
-                    tabbedPane.add(newGroup, addGroupPanel(newGroup));
+                    tabbedPane.add(newGroup, addGroupPanel(mainController.getGroupByName(newGroup)));
                 }
             }
         }
@@ -446,7 +452,8 @@ public class Main_Window implements View,Serializable{
         private void updateGroupList()
         {
             items = new String[mainController.getGroups().size()];
-            items = mainController.getGroups().toArray(items);
+            for (int i = 0;i<mainController.getGroups().size();i++)
+                items[i] = mainController.getGroups().get(i).getName();
             groups.setListData(items);
         }
     }

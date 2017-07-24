@@ -3,6 +3,7 @@ package concontrol;
 import ConModel.CatDaoCloud;
 import ConModel.Catalog;
 import ConModel.Contact;
+import ConModel.Group;
 import conview.View;
 
 import java.io.Serializable;
@@ -69,7 +70,7 @@ public class CatController implements Serializable { // to interface
         catalog.updateContact(contact,name,phnumber,group);
     }
 
-    public List<String> getGroups()
+    public List<Group> getGroups()
     {
         return catalog.getGroups();
     }
@@ -84,5 +85,9 @@ public class CatController implements Serializable { // to interface
 
     public void saveCatalog() {
         new CatDaoCloud().saveCatalog(catalog);
+    }
+
+    public Group getGroupByName(String newGroup) {
+       return catalog.getGroupByName(newGroup);
     }
 }

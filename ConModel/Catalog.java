@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Catalog implements Serializable, Observable {
     private static Catalog ourInstance;
-    private CatalogObserver observer;
+
 
     public static Catalog getInstance() {
         if (ourInstance == null)
@@ -26,13 +26,14 @@ public class Catalog implements Serializable, Observable {
     }
 
     private List<Contact> contacts = new ArrayList<Contact>();
-    private List<String> groups = new ArrayList<String>();
+    private List<Group> groups = new ArrayList<Group>();
+    private List<CatalogObserver> observers = new ArrayList<>();
 
-    public List<String> getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<String> groups) {
+    public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 
@@ -94,12 +95,13 @@ public class Catalog implements Serializable, Observable {
 
     @Override
     public void notifyObserver() {
-        observer.update();
+        for(CatalogObserver observer:observers)
+            observer.update();
     }
 
     @Override
     public void registerObserver(CatalogObserver obs) {
-        observer = obs;
+        observers.add(obs);
     }
 
     public String[] getNamesByGroup(String group) {
@@ -116,19 +118,26 @@ public class Catalog implements Serializable, Observable {
     }
 
     public void delGroup(String group) {
-        groups.remove(group);
+        groups.remove(getGroupByName(group));
         notifyObserver();
     }
 
     public void updateGroup(String oldSt, String text) {
         for(int i =0;i<groups.size();i++)
-            if (groups.get(i).equals(oldSt))
-                groups.set(i,text);
+            if (groups.get(i).getName().equals(oldSt))
+                groups.get(i).setName(text);
         notifyObserver();
     }
 
     public void addGroup(String newGroup) {
-        groups.add(newGroup);
+        groups.add(new Group(newGroup));
         notifyObserver();
+    }
+
+    public Group getGroupByName(String newGroup) {
+        for (int i = 0;i<groups.size();i++)
+            if (newGroup.equals(groups.get(i).getName()))
+                return groups.get(i);
+        return null;
     }
 }
