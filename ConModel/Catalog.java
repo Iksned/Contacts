@@ -15,7 +15,7 @@ public class Catalog implements Serializable, Observable {
         if (ourInstance == null)
             synchronized (Catalog.class) {
                 if (ourInstance == null)
-                    ourInstance = new CatDaoCloud().LoadCat();
+                    ourInstance = new CatDaoCloud().loadCatalog();
                 if (ourInstance == null)
                     ourInstance = new Catalog();
             }
@@ -23,9 +23,6 @@ public class Catalog implements Serializable, Observable {
     }
 
     private Catalog() {
-        groups.add("Group1");
-        groups.add("Group2");
-        groups.add("Group3");
     }
 
     private List<Contact> contacts = new ArrayList<Contact>();
@@ -110,7 +107,7 @@ public class Catalog implements Serializable, Observable {
         int inc = 0;
         for (int i = 0;i<contacts.size();i++)
         {
-            if(contacts.get(i).getGroup().equals(group)) {
+            if(group.equals(contacts.get(i).getGroup())) {
                 names[inc] = contacts.get(i).getName();
                 inc++;
             }

@@ -103,12 +103,13 @@ public class Main_Window implements View,Serializable{
 
         JButton exitButton = new JButton("Close");
         exitButton.setPreferredSize(new Dimension(50, 20));
-        exitButton.addActionListener(e -> {new CatDaoCloud().SaveCat(mainController.getCatalog());
+        exitButton.addActionListener(e -> {new CatDaoCloud().saveCatalog(mainController.getCatalog());
             System.exit(0);});
         contactList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (isLeftMouseButton(e)) {
+                    if(contactList.getModel().getSize()>0)
                     infoName.setText(updateInfo(mainController.getContactByName(contactList.getSelectedValue())));
                 }
                 if (isRightMouseButton(e)) {
@@ -157,10 +158,10 @@ public class Main_Window implements View,Serializable{
             }
         });
         final JMenuItem saveList = new JMenuItem("Save catalog");
-        saveList.addActionListener(e -> mainController.SaveCatalog());
+        saveList.addActionListener(e -> mainController.saveCatalog());
         final JMenuItem exit = new JMenuItem("Exit");
         exit.addActionListener(e -> {
-            mainController.SaveCatalog();
+            mainController.saveCatalog();
             System.exit(0);});
         mainMenu.add(addContact);
         mainMenu.add(saveList);

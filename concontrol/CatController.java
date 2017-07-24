@@ -13,6 +13,10 @@ public class CatController implements Serializable { // to interface
     private Catalog catalog;
     private View view;
 
+    public CatController(){
+        catalog = Catalog.getInstance();
+    }
+
     public CatController(Catalog catalog) {
         this.catalog = catalog;
     }
@@ -78,7 +82,7 @@ public class CatController implements Serializable { // to interface
         catalog.addGroup(newGroup);
     }
 
-    public void SaveCatalog() {
-        new CatDaoCloud().SaveCat(catalog);
+    public void saveCatalog() {
+        new CatDaoCloud().saveCatalog(catalog);
     }
 }

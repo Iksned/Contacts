@@ -3,7 +3,7 @@ package ConModel;
 
 public interface CatalogDAO {
 
-        Catalog LoadCat();
-        void SaveCat(Catalog catalog);
+        Catalog loadCatalog();
+        void saveCatalog(Catalog catalog);
 
 }

@@ -6,7 +6,7 @@ import java.io.*;
 public class CatDaoCloud implements CatalogDAO {
 
     @Override
-    public void SaveCat(Catalog cat)
+    public void saveCatalog(Catalog cat)
     {
         try {
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(new File("temp.catal")));
@@ -20,7 +20,7 @@ public class CatDaoCloud implements CatalogDAO {
     }
 
     @Override
-    public Catalog LoadCat()
+    public Catalog loadCatalog()
     {
         Catalog catalog = null;
         try {
