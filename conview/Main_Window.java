@@ -364,7 +364,6 @@ public class Main_Window implements View,Serializable{
             this.validate();
             this.pack();
             this.setVisible(true);
-            JList<String> kl = new JList<>();
         }
 
         private void changeGroup() {
@@ -374,7 +373,7 @@ public class Main_Window implements View,Serializable{
                 mainController.updateGroup(oldSt, newSt);
                 if (oldSt != null) {
                     tabbedPane.setTitleAt(getTabNumber(oldSt), newSt);
-                    if (((JList<String>) (tabbedPane.getComponent(getTabNumber(newSt)).getComponentAt(0, 0))).getComponentCount() > 1)
+                    if (((JList<String>) (tabbedPane.getComponent(getTabNumber(newSt)).getComponentAt(0, 0))).getModel().getSize() > 0)
                         for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(newSt)).getComponentAt(0, 0))).getComponentCount(); i++) {
                             Contact contact = mainController.getContactByName(mainController.getNamesByGruop(oldSt)[i]);
                             mainController.updateContact(contact, contact.getName(), contact.getPh_number(), newSt);
@@ -387,7 +386,7 @@ public class Main_Window implements View,Serializable{
         private void delGroup() {
             String groupToDel = groups.getSelectedValue();
             mainController.delGroup(groupToDel);
-            if (((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount() > 1) {
+            if (((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getModel().getSize() > 0) {
                 int f = ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount();
                 for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount(); i++) {
                     Contact contact = mainController.getContactByName(mainController.getNamesByGruop(groupToDel)[i]);
