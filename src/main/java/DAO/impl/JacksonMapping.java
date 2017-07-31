@@ -168,6 +168,7 @@ public class JacksonMapping implements CatalogDAO {
             OutputStream outputStream = new FileOutputStream(Constants.saveFile);
             outputStream.write(xmlsupporter.toString().getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
+            outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
