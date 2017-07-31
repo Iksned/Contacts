@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog>
+	<contacts>
+		<contact>
+			<group>
+				<name>Group1</name>
+			</group>
+			<name>Name1</name>
+			<ph_number>132135</ph_number>
+		</contact>
+		<contact>
+			<group>
+				<name>Group2</name>
+			</group>
+			<name>Name2</name>
+			<ph_number>51616</ph_number>
+		</contact>
+		<contact>
+			<group>
+				<name>Group3</name>
+			</group>
+			<name>Name3</name>
+			<ph_number>465651</ph_number>
+		</contact>
+	<contact>
+<group>
+<name>Group1</name>
+</group>
+<name>Name4</name>
+<ph_number>12345</ph_number>
+</contact>
+
+
+</contacts>
+	<groups>
+		<group>
+			<name>Group1</name>
+		</group>
+		<group>
+			<name>Group2</name>
+		</group>
+		<group>
+			<name>Group3</name>
+		</group>
+	
+
+</groups>
+</catalog>
