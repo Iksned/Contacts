@@ -18,7 +18,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -75,7 +77,7 @@ public class JacksonMapping implements CatalogDAO {
             Contact contact = (Contact) ob;
             catalog.addContact(contact);
         }
-       // saveToFile();
+        saveToFile();
 
     }
 
@@ -142,17 +144,43 @@ public class JacksonMapping implements CatalogDAO {
                 if (contact.equals(catalog.getContacts().get(i)))
                     catalog.delContact(contact.getName());
         }
-      //  saveToFile();
+       saveToFile();
 
     }
 
     private void saveToFile() {
-        File file = new File("testcatalog.xml");
         XmlMapper xmlMapper = new XmlMapper();
+        StringBuilder xmlbuilder = new StringBuilder();
+        StringBuilder xmlsupporter = new StringBuilder();
+        StringBuilder xmlsupport2 = new StringBuilder();
         try {
-            xmlMapper.writeValue(file, catalog);
+            xmlbuilder.append(xmlMapper.writeValueAsString(catalog));
+            xmlsupporter.append(xmlbuilder.substring(0,xmlbuilder.indexOf("names")-1)+"</Catalog>");
+            xmlbuilder = new StringBuilder().append(xmlsupporter.substring(xmlbuilder.indexOf("<contacts>")+10,xmlbuilder.lastIndexOf("</contacts>")));
+            xmlsupport2.append(xmlsupporter.substring(xmlsupporter.indexOf("<groups>")+8,xmlsupporter.lastIndexOf("</groups>")));
+            replaceAll(xmlbuilder,"contacts","contact");
+            replaceAll(xmlsupport2,"groups","group");
+            xmlsupporter = new StringBuilder().append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><catalog><contacts>");
+            xmlsupporter.append(xmlbuilder);
+            xmlsupporter.append("</contacts><groups>");
+            xmlsupporter.append(xmlsupport2);
+            xmlsupporter.append("</groups></catalog>");
+            OutputStream outputStream = new FileOutputStream(Constants.saveFile);
+            outputStream.write(xmlsupporter.toString().getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void replaceAll(StringBuilder builder, String from, String to)
+    {
+        int index = builder.indexOf(from);
+        while (index != -1)
+        {
+            builder.replace(index, index + from.length(), to);
+            index += to.length();
+            index = builder.indexOf(from, index);
         }
     }
 }
