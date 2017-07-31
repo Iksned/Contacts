@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Contact implements Serializable{
+
     private String name;
     private String ph_number;
     private Group group;

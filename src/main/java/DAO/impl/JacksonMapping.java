@@ -5,12 +5,18 @@ import ConModel.Catalog;
 import ConModel.Contact;
 import ConModel.Group;
 import DAO.CatalogDAO;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import DAO.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,8 +27,22 @@ import java.util.List;
 
 
 public class JacksonMapping implements CatalogDAO {
+
     private Catalog catalog;
+
     public JacksonMapping() {
+        SchemaFactory schemaFactory = SchemaFactory
+                .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        try {
+            Schema schema = schemaFactory.newSchema(Constants.checkFile);
+            Source xmlFile = new StreamSource(Constants.saveFile);
+            Validator validator = schema.newValidator();
+            validator.validate(xmlFile);
+            System.out.println("XML is valid");
+        } catch (SAXException e) {
+            System.out.println("XML is NOT valid reason:" + e);
+        } catch (IOException ignored) {}
+
         ObjectMapper objectMapper = new XmlMapper();
         try {
             catalog = objectMapper.readValue(
@@ -55,13 +75,13 @@ public class JacksonMapping implements CatalogDAO {
             Contact contact = (Contact) ob;
             catalog.addContact(contact);
         }
-        saveToFile();
+       // saveToFile();
 
     }
 
     @Override
     public Object read(Object obj) {
-        initCatalog();
+        //initCatalog();
         String[] finList = null;
         String path = (String)obj;
         String[] defPath = path.split(" ");
@@ -95,17 +115,13 @@ public class JacksonMapping implements CatalogDAO {
         if (oldOb instanceof Group) {
             Group oldGroup = (Group) oldOb;
             Group newGroup = (Group) newOb;
-            for (int i = 0;i<catalog.getGroups().size();i++)
-                if (oldGroup.getName().equals(catalog.getGroups().get(i).getName()))
-                    catalog.getGroups().get(i).setName(newGroup.getName());
+            catalog.updateGroup(oldGroup.getName(),newGroup.getName());
         }
         if (oldOb instanceof Contact)
         {
             Contact contact = (Contact) oldOb;
             Contact newContact = (Contact) newOb;
-            for (int i = 0;i<catalog.getContacts().size();i++)
-                if (contact.equals(catalog.getContacts().get(i)))
-                    catalog.getContacts().set(i,newContact);
+            catalog.updateContact(contact,newContact.getName(),newContact.getPh_number(),newContact.getGroup());
         }
         saveToFile();
     }
@@ -124,10 +140,9 @@ public class JacksonMapping implements CatalogDAO {
             Contact contact = (Contact) ob;
             for (int i = 0;i<catalog.getContacts().size();i++)
                 if (contact.equals(catalog.getContacts().get(i)))
-                    catalog.getContacts().remove(i);
-
+                    catalog.delContact(contact.getName());
         }
-        saveToFile();
+      //  saveToFile();
 
     }
 
@@ -139,9 +154,5 @@ public class JacksonMapping implements CatalogDAO {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        new JacksonMapping().saveToFile();
     }
 }

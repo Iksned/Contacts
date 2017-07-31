@@ -125,8 +125,6 @@ public class CatalogSAXparser implements CatalogDAO {
                 target = defPath[1];
                 contactcheck = true;
             }
-
-
         }
 
         @Override

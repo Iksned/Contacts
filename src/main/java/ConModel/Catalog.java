@@ -1,6 +1,7 @@
 package ConModel;
 
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import concontrol.CatalogObserver;
 import concontrol.Observable;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@JacksonXmlRootElement
 public class Catalog implements Serializable {
     private static Catalog ourInstance;
 
@@ -42,8 +44,6 @@ public class Catalog implements Serializable {
 
     public void addContact(Contact contact1) {
         this.contacts.add(contact1);
-
-
     }
 
     public void addContact(String name,String phNumber,Group group) {
