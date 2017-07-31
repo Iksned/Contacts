@@ -1,5 +1,7 @@
 package DAO.impl;
 
+import ConModel.Contact;
+import ConModel.Group;
 import DAO.CatalogDAO;
 import DAO.Constants;
 import org.xml.sax.Attributes;
@@ -22,6 +24,10 @@ import java.util.List;
 
 public class CatalogSAXparser implements CatalogDAO {
     private List<String> result;
+    private String name;
+    private String num;
+    private String group;
+    private boolean contactcheck = false;
 
     public CatalogSAXparser() {
         SchemaFactory schemaFactory = SchemaFactory
@@ -58,12 +64,16 @@ public class CatalogSAXparser implements CatalogDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if (contactcheck) {
+            contactcheck = false;
+            return new Contact(name, num, new Group(group));
+        }
+
         List<String> finlist = new ArrayList<>();
-        for (int i=0;i<result.size();i++)
-            if (!result.get(i).contains("\n"))
-                finlist.add(result.get(i));
-        String[] finArray = finlist.toArray(new String[0]);
-        return finArray;
+        for (String aResult : result)
+            if (!aResult.contains("\n"))
+                finlist.add(aResult);
+        return finlist.toArray(new String[0]);
     }
 
 
@@ -92,6 +102,7 @@ public class CatalogSAXparser implements CatalogDAO {
         boolean check3 = false;
         boolean check4 = false;
         boolean check5 = false;
+        boolean check6 = false;
 
         public ReadHandler(String task1) {
             this.task = task1;
@@ -109,10 +120,11 @@ public class CatalogSAXparser implements CatalogDAO {
                 target =defPath[1];
             }
             else if (defPath[0].equals("getContactByName"))
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "Not supported in this parser",
-                        "Parser warning",
-                        JOptionPane.WARNING_MESSAGE);
+            {
+                task = "getContactByName";
+                target = defPath[1];
+                contactcheck = true;
+            }
 
 
         }
@@ -151,6 +163,17 @@ public class CatalogSAXparser implements CatalogDAO {
                     check3 = true;
                 if (qName.equals("name") && check2 && check4 && check1)
                     check5 = true;
+            } else if (task.equals("getContactByName")){
+                if (qName.equals("contact"))
+                    check1 = true;
+                if (qName.equals("group") && check1)
+                    check2 = true;
+                if (qName.equals("name") && check1 && !check2)
+                    check3 = true;
+                if (qName.equals("name") && check1 && check2 && check4)
+                    check5 = true;
+                if (qName.equals("ph_number") && check1 && check4)
+                    check6 = true;
             }
         }
 
@@ -192,6 +215,19 @@ public class CatalogSAXparser implements CatalogDAO {
                     check5 = false;
                     check4 = false;
                 }
+            } else if (task.equals("getContactByName")){
+                if (qName.equals("contact")) {
+                    check1 = false;
+                    check4 = false;
+                }
+                if (qName.equals("group") && check1)
+                    check2 = false;
+                if (qName.equals("name") && check1 && !check2)
+                    check3 = false;
+                if (qName.equals("name") && check1 && check2 && check4)
+                    check5 = false;
+                if (qName.equals("ph_number") && check1 && check4)
+                    check6 = false;
             }
 
         }
@@ -216,6 +252,18 @@ public class CatalogSAXparser implements CatalogDAO {
                    check4 = true;
                if (check5)
                    result.add(new String(ch,start,length));
+            } else if (task.equals("getContactByName"))
+            {
+                if (check3 && new String(ch,start,length).equals(target)) {
+                    check4 = true;
+                    name = new String(ch,start,length);
+                }
+                if (check5)
+                    group = new String(ch,start,length);
+                if (check6)
+                    num = new String(ch,start,length);
+
+
             }
 
         }
