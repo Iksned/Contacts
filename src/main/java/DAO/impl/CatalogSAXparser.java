@@ -53,6 +53,7 @@ public class CatalogSAXparser implements CatalogDAO {
                 JOptionPane.WARNING_MESSAGE);
     }
 
+    //TODO several reads
     @Override
     public Object read(Object path) {
         result = new ArrayList<>();
@@ -76,8 +77,6 @@ public class CatalogSAXparser implements CatalogDAO {
         return finlist.toArray(new String[0]);
     }
 
-
-
     @Override
     public void update(Object oldOb, Object newOb) {
         JOptionPane.showMessageDialog(new JFrame(),
@@ -97,12 +96,13 @@ public class CatalogSAXparser implements CatalogDAO {
     class ReadHandler extends DefaultHandler {
         String task;
         String target;
-        boolean check1 = false;
-        boolean check2 = false;
-        boolean check3 = false;
+        boolean contactCheck = false;
+        boolean groupCheck = false;
+        boolean resultCheck = false;
         boolean check4 = false;
         boolean check5 = false;
         boolean check6 = false;
+        boolean groupsCheck = false;
 
         public ReadHandler(String task1) {
             this.task = task1;
@@ -131,46 +131,46 @@ public class CatalogSAXparser implements CatalogDAO {
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             if (task.equals("Allnames")) {
                 if (qName.equals("contact"))
-                    check1 = true;
-                if (qName.equals("group") && check1)
-                    check2 = true;
-                if (qName.equals("name") && check1 && !check2)
-                    check3 = true;
+                    contactCheck = true;
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = true;
+                if (qName.equals("name") && contactCheck && !groupCheck)
+                    resultCheck = true;
             } else if (task.equals("getNameByGroup")){
                 if (qName.equals("contact"))
-                    check1 = true;
-                if (qName.equals("group") && check1)
-                    check2 = true;
-                if (qName.equals("name") && check1 && check2)
-                    check3 = true;
-                if (qName.equals("name") && check4 && !check2 && check1)
+                    contactCheck = true;
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = true;
+                if (qName.equals("name") && contactCheck && groupCheck)
+                    resultCheck = true;
+                if (qName.equals("name") && check4 && !groupCheck && contactCheck)
                     check5 = true;
             } else if (task.equals("Allgroups")){
                 if (qName.equals("groups"))
-                    check1 = true;
+                    groupsCheck = true;
                 if (qName.equals("group"))
-                    check2 = true;
-                if (qName.equals("name") && check1 && check2)
-                    check3 = true;
+                    groupCheck = true;
+                if (qName.equals("name") && contactCheck && groupCheck)
+                    resultCheck = true;
             } else if (task.equals("getGroupByName")){
                 if (qName.equals("contact"))
-                    check1 = true;
-                if (qName.equals("group") && check1)
-                    check2 = true;
-                if (qName.equals("name") && check1 && !check2)
-                    check3 = true;
-                if (qName.equals("name") && check2 && check4 && check1)
+                    contactCheck = true;
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = true;
+                if (qName.equals("name") && contactCheck && !groupCheck)
+                    resultCheck = true;
+                if (qName.equals("name") && groupCheck && check4 && contactCheck)
                     check5 = true;
             } else if (task.equals("getContactByName")){
                 if (qName.equals("contact"))
-                    check1 = true;
-                if (qName.equals("group") && check1)
-                    check2 = true;
-                if (qName.equals("name") && check1 && !check2)
-                    check3 = true;
-                if (qName.equals("name") && check1 && check2 && check4)
+                    contactCheck = true;
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = true;
+                if (qName.equals("name") && contactCheck && !groupCheck)
+                    resultCheck = true;
+                if (qName.equals("name") && contactCheck && groupCheck && check4)
                     check5 = true;
-                if (qName.equals("ph_number") && check1 && check4)
+                if (qName.equals("ph_number") && contactCheck && check4)
                     check6 = true;
             }
         }
@@ -179,52 +179,52 @@ public class CatalogSAXparser implements CatalogDAO {
         public void endElement(String uri, String localName, String qName) throws SAXException {
             if (task.equals("Allnames")) {
                 if (qName.equals("contact"))
-                    check1 = false;
-                if (qName.equals("group") && check1)
-                    check2 = false;
-                if (qName.equals("name") && check1 && !check2)
-                    check3 = false;
+                    contactCheck = false;
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = false;
+                if (qName.equals("name") && contactCheck && !groupCheck)
+                    resultCheck = false;
             } else if (task.equals("getNameByGroup")){
                 if (qName.equals("contact"))
-                    check1 = false;
-                if (qName.equals("group") && check1)
-                    check2 = false;
-                if (qName.equals("name") && check1 && check2)
-                    check3 = false;
-                if (qName.equals("name") && check4 && !check2 && check1) {
+                    contactCheck = false;
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = false;
+                if (qName.equals("name") && contactCheck && groupCheck)
+                    resultCheck = false;
+                if (qName.equals("name") && check4 && !groupCheck && contactCheck) {
                     check5 = false;
                     check4 = false;
                 }
             } else if (task.equals("Allgroups")){
                 if (qName.equals("groups"))
-                    check1 = false;
+                    groupsCheck = false;
                 if (qName.equals("group"))
-                    check2 = false;
-                if (qName.equals("name") && check1 && check2)
-                    check3 = false;
+                    groupCheck = false;
+                if (qName.equals("name") && contactCheck && groupCheck)
+                    resultCheck = false;
             } else if (task.equals("getGroupByName")){
                 if (qName.equals("contact"))
-                    check1 = false;
-                if (qName.equals("group") && check1)
-                    check2 = false;
-                if (qName.equals("name") && check1 && !check2)
-                    check3 = false;
-                if (qName.equals("name") && check2 && check4 && check1) {
+                    contactCheck = false;
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = false;
+                if (qName.equals("name") && contactCheck && !groupCheck)
+                    resultCheck = false;
+                if (qName.equals("name") && groupCheck && check4 && contactCheck) {
                     check5 = false;
                     check4 = false;
                 }
             } else if (task.equals("getContactByName")){
                 if (qName.equals("contact")) {
-                    check1 = false;
+                    contactCheck = false;
                     check4 = false;
                 }
-                if (qName.equals("group") && check1)
-                    check2 = false;
-                if (qName.equals("name") && check1 && !check2)
-                    check3 = false;
-                if (qName.equals("name") && check1 && check2 && check4)
+                if (qName.equals("group") && contactCheck)
+                    groupCheck = false;
+                if (qName.equals("name") && contactCheck && !groupCheck)
+                    resultCheck = false;
+                if (qName.equals("name") && contactCheck && groupCheck && check4)
                     check5 = false;
-                if (qName.equals("ph_number") && check1 && check4)
+                if (qName.equals("ph_number") && contactCheck && check4)
                     check6 = false;
             }
 
@@ -233,26 +233,25 @@ public class CatalogSAXparser implements CatalogDAO {
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             if (task.equals("Allnames")) {
-                if (check3)
+                if (resultCheck)
                     result.add(new String(ch, start, length));
             } else if (task.equals("getNameByGroup")) {
-                if (check3) {
+                if (resultCheck) {
                     if (new String(ch, start, length).equals(target))
                         check4 = true;
                 }
                 else if (check4 && check5)
                     result.add(new String(ch,start,length));
             } else if (task.equals("Allgroups")){
-                if (check3 && !new String(ch,start,length).equals("\n"))
+                if (resultCheck && !new String(ch,start,length).equals("\n"))
                     result.add(new String(ch,start,length));
             } else if (task.equals("getGroupByName")){
-               if (check3 && new String(ch,start,length).equals(target))
+               if (resultCheck && new String(ch,start,length).equals(target))
                    check4 = true;
                if (check5)
                    result.add(new String(ch,start,length));
-            } else if (task.equals("getContactByName"))
-            {
-                if (check3 && new String(ch,start,length).equals(target)) {
+            } else if (task.equals("getContactByName")) {
+                if (resultCheck && new String(ch,start,length).equals(target)) {
                     check4 = true;
                     name = new String(ch,start,length);
                 }
@@ -260,10 +259,7 @@ public class CatalogSAXparser implements CatalogDAO {
                     group = new String(ch,start,length);
                 if (check6)
                     num = new String(ch,start,length);
-
-
             }
-
         }
     }
 }

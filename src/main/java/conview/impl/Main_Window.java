@@ -397,6 +397,7 @@ public class Main_Window implements View,Serializable{
                 int f = ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount();
                 for (int i = 0; i < ((JList<String>) (tabbedPane.getComponent(getTabNumber(groupToDel)).getComponentAt(0, 0))).getComponentCount(); i++) {
                     Contact contact = mainController.getContactByName(mainController.getNamesByGruop(groupToDel)[i]);
+                    if (contact != null)
                     mainController.updateContact(contact, contact.getName(), contact.getPh_number(), null);
                 }
             }

@@ -52,14 +52,13 @@ public class Contact implements Serializable{
 
         if (!name.equals(contact.name)) return false;
         if (!ph_number.equals(contact.ph_number)) return false;
-        return group != null ? group.equals(contact.group) : contact.group == null;
+        return true;
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
         result = 31 * result + ph_number.hashCode();
-        result = 31 * result + (group != null ? group.hashCode() : 0);
         return result;
     }
 }

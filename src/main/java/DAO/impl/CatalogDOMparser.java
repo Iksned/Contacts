@@ -11,6 +11,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.print.Doc;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,7 +30,7 @@ import java.io.IOException;
 
 public class CatalogDOMparser implements CatalogDAO {
 
-    private Document document;
+    //private Document document;
 
     public CatalogDOMparser() {
         SchemaFactory schemaFactory = SchemaFactory
@@ -43,21 +44,11 @@ public class CatalogDOMparser implements CatalogDAO {
         } catch (SAXException e) {
             System.out.println("XML is NOT valid reason:" + e);
         } catch (IOException e) {}
-
-        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
-        f.setValidating(false);
-        DocumentBuilder builder = null;
-
-        try {
-            builder = f.newDocumentBuilder();
-            document =  builder.parse(Constants.saveFile);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    private void initDocument()
+    private Document initDocument()
     {
+        Document document = null;
         DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
         f.setValidating(false);
         DocumentBuilder builder = null;
@@ -68,10 +59,12 @@ public class CatalogDOMparser implements CatalogDAO {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
+        return document;
     }
 
     @Override
     public void create(Object ob) {
+        Document document = initDocument();
         if (ob instanceof Group) {
             Group group = (Group) ob;
             Element newGroup = document.createElement("group");
@@ -97,12 +90,12 @@ public class CatalogDOMparser implements CatalogDAO {
             phNumber.setTextContent(contact.getPh_number());
             newContact.appendChild(phNumber);
         }
-        saveToFile();
+        saveToFile(document);
     }
 
     @Override
     public Object read(Object obj) {
-        initDocument();
+        Document document = initDocument();
         String path = (String)obj;
         String[] defPath = path.split(" ");
         if (defPath[0].equals("Allnames"))
@@ -148,6 +141,7 @@ public class CatalogDOMparser implements CatalogDAO {
 
     @Override
     public void update(Object oldOb,Object newOb) {
+        Document document = initDocument();
         if (oldOb instanceof Group) {
             Group oldGroup = (Group) oldOb;
             NodeList list = document.getElementsByTagName("groups").item(0).getChildNodes();
@@ -202,11 +196,12 @@ public class CatalogDOMparser implements CatalogDAO {
                 }
             }
         }
-        saveToFile();
+        saveToFile(document);
     }
 
     @Override
     public void delete(Object ob) {
+        Document document = initDocument();
         if (ob instanceof Group) {
             Group oldGroup = (Group) ob;
             NodeList list = document.getElementsByTagName("groups").item(0).getChildNodes();
@@ -245,10 +240,10 @@ public class CatalogDOMparser implements CatalogDAO {
                 }
             }
         }
-        saveToFile();
+        saveToFile(document);
     }
 
-    private void saveToFile()
+    private void saveToFile(Document document)
     {
         File file = Constants.saveFile;
         Transformer transformer = null;
