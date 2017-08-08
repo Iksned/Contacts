@@ -123,18 +123,21 @@ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE FUNCTION  updateContact(cname text,num int,groupname text,oldcname text,oldnum int) RETURNS void AS
 $$
+DECLARE
+ID int;
 BEGIN
+
 UPDATE Contacts
 SET name = cname, Phone_Number = num
 WHERE Contats.name = oldcname AND Contacts.Phone_Number = oldnum;
 
-WITH updatedContact AS (SELECT ContactID AS ID
+SELECT ContactID INTO ID
 FROM contacts
-WHERE name = cname AND Phone_Number = num)
+WHERE name = cname AND Phone_Number = num;
 
 UPDATE ContactGroup
 SET GroupName = groupname
-WHERE ContactID = updatedContact.ID;
+WHERE ContactID = ID;
 END
 $$
 LANGUAGE 'plpgsql';
