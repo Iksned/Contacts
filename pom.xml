@@ -62,7 +62,7 @@
                         <configuration>
                             <autocommit>true</autocommit>
                             <srcFiles>
-                                <srcFile>src/db/create_tables.sql</srcFile>
+                                <srcFile>db/create_tables.sql</srcFile>
                             </srcFiles>
                         </configuration>
                     </execution>
@@ -76,10 +76,11 @@
                         <configuration>
                             <autocommit>true</autocommit>
                             <srcFiles>
-                                <srcFile>src/db/fill_base.sql</srcFile>
+                                <srcFile>db/fill_base.sql</srcFile>
                             </srcFiles>
                         </configuration>
                     </execution>
+
 
                     <execution>
                         <id>sql-functions</id>
@@ -90,24 +91,10 @@
                         <configuration>
                             <autocommit>true</autocommit>
                             <srcFiles>
-                                <srcFile>src/db/sql_functions.sql</srcFile>
+                                <srcFile>db/sql_functions.sql</srcFile>
                             </srcFiles>
                         </configuration>
                     </execution>
-
-                    <execution>
-                        <id>sql-procedures</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <autocommit>true</autocommit>
-                            <srcFiles>
-                                <srcFile>src/db/sql_procedures.sql</srcFile>
-                            </srcFiles>
-                        </configuration>
-                    </execution>            
 
                 </executions>
 
