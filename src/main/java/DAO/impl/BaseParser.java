@@ -71,7 +71,7 @@ public class BaseParser implements CatalogDAO {
 
     @Override
     public synchronized Object read(Object ob) {
-        String result = "";
+        Object result = null;
         PreparedStatement stmt = null;
         String path = (String)ob;
         String[] defPath = path.split(" ");
@@ -90,7 +90,7 @@ public class BaseParser implements CatalogDAO {
                 }
                 ResultSet rs = stmt.executeQuery();
                 if (rs != null)
-                result = (String) mapper.map(rs);
+                result = mapper.map(rs);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -101,7 +101,7 @@ public class BaseParser implements CatalogDAO {
                 stmt = conn.prepareCall(getAllContactsSQL);
                 stmt.setString(1,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
-                return (String[]) mapper.map(rs);
+                result = mapper.map(rs);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -112,7 +112,7 @@ public class BaseParser implements CatalogDAO {
                 stmt = conn.prepareCall(getAllGroupsSQL);
                 stmt.setString(1,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
-                    return mapper.map(rs);
+                result = mapper.map(rs);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -124,7 +124,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,defPath[2]);
                 stmt.setString(2,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
-                return mapper.map(rs);
+                result = mapper.map(rs);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -136,7 +136,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,defPath[2]);
                 stmt.setString(2,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
-                return mapper.map(rs);
+                result = mapper.map(rs);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -148,15 +148,21 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,defPath[2]);
                 stmt.setString(2,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
-                return mapper.map(rs);
+                result = mapper.map(rs);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        try {
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
-    //TODO check updates on SQL lvl
     @Override
     public void update(Object oldOb, Object newOb) {
         PreparedStatement stmt = null;
