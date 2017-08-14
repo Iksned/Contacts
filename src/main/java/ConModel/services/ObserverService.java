@@ -12,18 +12,26 @@ public class ObserverService implements Observable {
     private final Object MONITOR = new Object();
     @Override
     public void notifyObserver() {
-        for(CatalogObserver observer:observers)
-        observer.update();
+        List<CatalogObserver> tempObservers;
+        synchronized (MONITOR) {
+            tempObservers = new ArrayList<>(observers);
+            for (CatalogObserver observer : tempObservers)
+                observer.update();
+        }
     }
 
     @Override
     public void registerObserver(CatalogObserver obs) {
-        observers.add(obs);
+        synchronized (MONITOR) {
+            observers.add(obs);
+        }
     }
 
     @Override
     public void removeObsever(CatalogObserver obs) {
-        observers.remove(obs);
+        synchronized (MONITOR) {
+            observers.remove(obs);
+        }
     }
 
 }

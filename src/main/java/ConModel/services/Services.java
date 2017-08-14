@@ -84,7 +84,7 @@ public class Services {
     }
 
 
-    public static synchronized ObserverService getObserverService()
+    public static ObserverService getObserverService()
     {
         return observerService;
     }
