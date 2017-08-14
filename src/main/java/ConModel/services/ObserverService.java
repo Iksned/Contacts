@@ -15,9 +15,10 @@ public class ObserverService implements Observable {
         List<CatalogObserver> tempObservers;
         synchronized (MONITOR) {
             tempObservers = new ArrayList<>(observers);
+        }
             for (CatalogObserver observer : tempObservers)
                 observer.update();
-        }
+
     }
 
     @Override
