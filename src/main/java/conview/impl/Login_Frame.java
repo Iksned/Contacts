@@ -24,8 +24,8 @@ public class Login_Frame {
             String loginText = login.getText();
             String passText = password.getText();
             if (controller.checkUser(loginText,passText)) {
-                new User(loginText,passText);
-                controller.chooseParser(loginText);
+                User chosenOne = new User(loginText,passText);
+                controller.chooseParser(chosenOne);
                 loginframe.setVisible(false);
             }
             else

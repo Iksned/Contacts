@@ -8,9 +8,9 @@ import conview.impl.Main_Window;
 import java.io.Serializable;
 import java.util.List;
 
-public class CatController implements Serializable { // to interface
+public class CatController implements Serializable {
 
-    private String currentUser;
+    private User currentUser;
        public CatController(){
     }
 
@@ -20,7 +20,7 @@ public class CatController implements Serializable { // to interface
 
     public void addContact(Contact contact)
     {
-        Services.addContact(currentUser,contact);
+        Services.addContact(currentUser.username,contact);
     }
 
     public void addContact(String name,String ph,Group group)
@@ -34,16 +34,16 @@ public class CatController implements Serializable { // to interface
     }
 
     public Contact getContactByName(String selectedValue) {
-        return Services.getContactByName(selectedValue,currentUser);
+        return Services.getContactByName(selectedValue,currentUser.username);
     }
 
     public String[] getNames() {
-        return Services.getAllNames(currentUser);
+        return Services.getAllNames(currentUser.username);
     }
 
     public String[] getNamesByGruop(String group)
     {
-        return Services.getNamesByGroup(group,currentUser);
+        return Services.getNamesByGroup(group,currentUser.username);
     }
 
     public void updateContact(Contact contact,String name, String phnumber, Group group) {
@@ -52,7 +52,7 @@ public class CatController implements Serializable { // to interface
 
     public List<Group> getGroups()
     {
-        return Services.getGroups(currentUser);
+        return Services.getGroups(currentUser.username);
     }
 
     public void updateGroup(String oldSt, String text) {
@@ -60,23 +60,20 @@ public class CatController implements Serializable { // to interface
     }
 
     public void addGroup(Group newGroup) {
-        Services.addGroup(currentUser,newGroup);
+        Services.addGroup(currentUser.username,newGroup);
     }
 
     public Group getGroupByName(String newGroup) {
-       return Services.getGroupByName(newGroup,currentUser);
+       return Services.getGroupByName(newGroup,currentUser.username);
     }
 
     public Observable getObsService() {
            return Services.getObserverService();
     }
 
-    public void chooseParser(String chosen) {
-           // Services.setParser(chosen);
+    public void chooseParser(User chosen) {
            currentUser = chosen;
-           new Main_Window(this,chosen);
-
-
+           new Main_Window(this,chosen.username);
     }
 
     public boolean checkUser(String loginText, String passText) {
