@@ -52,7 +52,7 @@
                     <delimiterType>row</delimiterType>
                 </configuration>
                 <executions>
-
+                <!--
                    <execution>
                       <id>create-tables</id>
                         <phase>install</phase>
@@ -80,6 +80,7 @@
                             </srcFiles>
                         </configuration>
                     </execution>
+                    -->
 
 
                     <execution>
@@ -129,6 +130,13 @@
             <version>2.6.3</version>
 
         </dependency>
+
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+        </dependency>
+
         <dependency>
 
             <groupId>org.apache.commons</groupId>

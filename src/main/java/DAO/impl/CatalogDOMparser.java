@@ -63,7 +63,7 @@ public class CatalogDOMparser implements CatalogDAO {
     }
 
     @Override
-    public void create(Object ob) {
+    public void create(String user,Object ob) {
         Document document = initDocument();
         if (ob instanceof Group) {
             Group group = (Group) ob;

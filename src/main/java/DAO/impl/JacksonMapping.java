@@ -59,7 +59,7 @@ public class JacksonMapping implements CatalogDAO {
     }
 
     @Override
-    public void create(Object ob) {
+    public void create(String user,Object ob) {
         Catalog catalog = initCatalog();
         if (ob instanceof Group) {
             Group group = (Group) ob;

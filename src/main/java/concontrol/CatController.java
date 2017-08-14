@@ -2,6 +2,7 @@ package concontrol;
 
 import ConModel.*;
 import ConModel.services.Services;
+import conview.impl.Cookies;
 import conview.impl.Main_Window;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class CatController implements Serializable { // to interface
 
+    private String currentUser;
        public CatController(){
     }
 
@@ -18,7 +20,7 @@ public class CatController implements Serializable { // to interface
 
     public void addContact(Contact contact)
     {
-        Services.addContact(contact);
+        Services.addContact(currentUser,contact);
     }
 
     public void addContact(String name,String ph,Group group)
@@ -32,16 +34,16 @@ public class CatController implements Serializable { // to interface
     }
 
     public Contact getContactByName(String selectedValue) {
-        return Services.getContactByName(selectedValue);
+        return Services.getContactByName(selectedValue,currentUser);
     }
 
     public String[] getNames() {
-        return Services.getAllNames();
+        return Services.getAllNames(currentUser);
     }
 
     public String[] getNamesByGruop(String group)
     {
-        return Services.getNamesByGroup(group);
+        return Services.getNamesByGroup(group,currentUser);
     }
 
     public void updateContact(Contact contact,String name, String phnumber, Group group) {
@@ -50,7 +52,7 @@ public class CatController implements Serializable { // to interface
 
     public List<Group> getGroups()
     {
-        return Services.getGroups();
+        return Services.getGroups(currentUser);
     }
 
     public void updateGroup(String oldSt, String text) {
@@ -58,11 +60,11 @@ public class CatController implements Serializable { // to interface
     }
 
     public void addGroup(Group newGroup) {
-        Services.addGroup(newGroup);
+        Services.addGroup(currentUser,newGroup);
     }
 
     public Group getGroupByName(String newGroup) {
-       return Services.getGroupByName(newGroup);
+       return Services.getGroupByName(newGroup,currentUser);
     }
 
     public Observable getObsService() {
@@ -70,7 +72,14 @@ public class CatController implements Serializable { // to interface
     }
 
     public void chooseParser(String chosen) {
-            Services.setParser(chosen);
-           new Main_Window(this);
+           // Services.setParser(chosen);
+           currentUser = chosen;
+           new Main_Window(this,chosen);
+
+
+    }
+
+    public boolean checkUser(String loginText, String passText) {
+         return   Services.checkUser(loginText,passText);
     }
 }

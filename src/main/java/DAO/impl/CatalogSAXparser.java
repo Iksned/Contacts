@@ -46,7 +46,7 @@ public class CatalogSAXparser implements CatalogDAO {
 
 
     @Override
-    public void create(Object ob) {
+    public void create(String user,Object ob) {
         JOptionPane.showMessageDialog(new JFrame(),
                 "Not supported in this parser",
                 "Parser warning",

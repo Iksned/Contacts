@@ -24,10 +24,11 @@ public class Main_Window implements View,Serializable{
     private JPopupMenu listPopup;
     private JTabbedPane tabbedPane;
 
-    public Main_Window(CatController controller) throws HeadlessException {
+
+    public Main_Window(CatController controller,String username) throws HeadlessException {
         JFrame mainWindow = new JFrame();
         mainController = controller;
-        mainWindow.setTitle("Main Window");
+        mainWindow.setTitle("Main Window "+ username);
         mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainWindow.setPreferredSize(MAIN_DIMENSION);
         mainWindow.setBounds(500,400,300,300);
@@ -57,13 +58,13 @@ public class Main_Window implements View,Serializable{
     }
 
     private void fillList() {
-        JList<String> groupList;
+        JList<String> groupContacts;
         for (int i = 0;i<tabbedPane.getTabCount();i++) {
-           groupList =  (JList<String>) tabbedPane.getComponentAt(i).getComponentAt(0,0);
+           groupContacts =  (JList<String>) tabbedPane.getComponentAt(i).getComponentAt(0,0);
            if (i == 0)
-                groupList.setListData(mainController.getNames());
+                groupContacts.setListData(mainController.getNames());
            else
-               groupList.setListData(mainController.getNamesByGruop(tabbedPane.getTitleAt(i)));
+               groupContacts.setListData(mainController.getNamesByGruop(tabbedPane.getTitleAt(i)));
         }
     }
 
@@ -458,6 +459,5 @@ public class Main_Window implements View,Serializable{
             groups.setListData(items);
         }
     }
-
 
 }
