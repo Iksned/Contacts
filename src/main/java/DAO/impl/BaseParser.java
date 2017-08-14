@@ -15,7 +15,7 @@ public class BaseParser implements CatalogDAO {
    private static final String USER = "postgres";
    private static final String PASS = "postgres";
 
-    private static final String addGroupSQL = "{call addGroup(?,?)}";
+   private static final String addGroupSQL = "{call addGroup(?,?)}";
    private static final String addContactSQL = "{call addContact(?,?,?,?)}";
    private static final String checkUserSQL = "{call checkUser(?,?)}";
    private static final String getAllContactsSQL = "{call getallcontacts(?)}";
@@ -81,7 +81,7 @@ public class BaseParser implements CatalogDAO {
             try {
                 mapper = new CheckUser();
                 stmt = conn.prepareCall(checkUserSQL);
-                if (defPath.length > 1) {
+                if (defPath.length > 2) {
                     stmt.setString(1, defPath[1]);
                     stmt.setString(2, defPath[2]);
                 }
@@ -163,7 +163,6 @@ public class BaseParser implements CatalogDAO {
             }
         }
         try {
-
             if (stmt != null) {
                 stmt.close();
             }
