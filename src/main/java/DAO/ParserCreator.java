@@ -1,5 +1,5 @@
 package DAO;
 
 public interface ParserCreator {
-    public CatalogDAO factory_method();
+    public CatalogDAO getParser(String parserName);
 }

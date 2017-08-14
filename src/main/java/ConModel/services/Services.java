@@ -8,19 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Services {
-    private static ParserCreator creator;
+    private static ParserCreator creator = new BaserParserCreator();
     private static CatalogDAO parser;
     private static ObserverService observerService = new ObserverService();
 
     private static synchronized void setParser(String chosen)
     {
-        if (chosen.equals("User"))
-            creator = new UserParserCreator();
-        else if (chosen.equals("Contact"))
-            creator = new contactPaserCreator();
-        else if (chosen.equals("Group"))
-            creator = new groupParserCreator();
-        parser  = creator.factory_method();;
+        parser  = creator.getParser(chosen);;
     }
 
     public static synchronized String[] getAllNames(String user) {
