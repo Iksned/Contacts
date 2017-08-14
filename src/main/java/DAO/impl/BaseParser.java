@@ -41,8 +41,7 @@ public class BaseParser implements CatalogDAO {
 
     @Override
     public void create(String user,Object ob) {
-        String sql;
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         if (ob instanceof Group) {
             Group group = (Group) ob;
             try {
@@ -50,6 +49,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,user);
                 stmt.setString(2,group.getName());
                 stmt.executeQuery();
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -63,6 +63,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setInt(3,Integer.parseInt(contact.getPh_number()));
                 stmt.setString(4,contact.getGroup().getName());
                 stmt.executeQuery();
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -91,6 +92,9 @@ public class BaseParser implements CatalogDAO {
                 ResultSet rs = stmt.executeQuery();
                 if (rs != null)
                 result = mapper.map(rs);
+                if (rs != null) {
+                    rs.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -102,6 +106,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
                 result = mapper.map(rs);
+                rs.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -113,6 +118,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
                 result = mapper.map(rs);
+                rs.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -125,6 +131,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(2,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
                 result = mapper.map(rs);
+                rs.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -137,6 +144,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(2,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
                 result = mapper.map(rs);
+                rs.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -149,11 +157,13 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(2,defPath[1]);
                 ResultSet rs = stmt.executeQuery();
                 result = mapper.map(rs);
+                rs.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
         try {
+
             if (stmt != null) {
                 stmt.close();
             }
@@ -165,7 +175,7 @@ public class BaseParser implements CatalogDAO {
 
     @Override
     public void update(Object oldOb, Object newOb) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         if (oldOb instanceof Group) {
             Group group = (Group) oldOb;
             Group newGroup = (Group) newOb;
@@ -174,6 +184,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,newGroup.getName());
                 stmt.setString(2,group.getName());
                 stmt.executeQuery();
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -189,6 +200,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(4,contact.getGroup().getName());
                 stmt.setInt(5,Integer.parseInt(contact.getPh_number()));
                 stmt.executeQuery();
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -197,13 +209,14 @@ public class BaseParser implements CatalogDAO {
 
     @Override
     public void delete(Object ob) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         if (ob instanceof Group) {
             Group group = (Group) ob;
             try {
                 stmt = conn.prepareCall(delGroupSQL);
                 stmt.setString(1,group.getName());
                 stmt.executeQuery();
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -215,6 +228,7 @@ public class BaseParser implements CatalogDAO {
                 stmt.setString(1,contact.getName());
                 stmt.setInt(2,Integer.parseInt(contact.getPh_number()));
                 stmt.executeQuery();
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

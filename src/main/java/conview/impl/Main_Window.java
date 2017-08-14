@@ -106,7 +106,8 @@ public class Main_Window implements View,Serializable{
 
         JButton exitButton = new JButton("Close");
         exitButton.setPreferredSize(new Dimension(50, 20));
-        exitButton.addActionListener(e -> {System.exit(0);});
+        exitButton.addActionListener(e -> {
+            System.exit(0);});
         contactList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -116,7 +117,8 @@ public class Main_Window implements View,Serializable{
                 }
                 if (isRightMouseButton(e)) {
                     if (contactList.getSelectedValue() != null)
-                        listPopup.show(contactList,0,contactList.getSelectedIndex()*18);                }
+                        listPopup.show(contactList,0,contactList.getSelectedIndex()*18);
+                }
             }
             @Override
             public void mousePressed(MouseEvent e) {
