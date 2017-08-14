@@ -1,10 +1,11 @@
 package DAO;
 
-public interface CatalogDAO{
-        public void create(String user, Object ob);
-        public Object read(Object ob);
-        public void update(Object oldOb,Object newOb);
-        public void delete(Object ob);
+public interface CatalogDAO<T>{
+        public void create(String user, T ob);
+        public Object read(String ob);
+        public Object readAll(String ob);
+        public void update(T oldOb,T newOb);
+        public void delete(T ob);
 
 
 }

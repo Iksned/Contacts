@@ -1,5 +1,6 @@
 package conview.impl;
 
+import ConModel.User;
 import concontrol.CatController;
 
 import javax.swing.*;
@@ -23,6 +24,7 @@ public class Login_Frame {
             String loginText = login.getText();
             String passText = password.getText();
             if (controller.checkUser(loginText,passText)) {
+                new User(loginText,passText);
                 controller.chooseParser(loginText);
                 loginframe.setVisible(false);
             }
