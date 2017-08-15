@@ -29,7 +29,7 @@ public class BaseUserParser implements BaseUserDAO{
     }
 
     @Override
-    public synchronized Object read(String ob) {
+    public Object read(String ob) {
         Object result = null;
         PreparedStatement stmt = null;
         String path = (String)ob;
