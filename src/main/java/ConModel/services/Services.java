@@ -6,13 +6,11 @@ import DAO.*;
 import Utils.ResultTable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Services {
     private static ParserCreator creator = new BaserParserCreator();
     private static CatalogDAO parser;
-    private static ObserverService observerService = new ObserverService();
 
     private static synchronized void setParser(String chosen)
     {
@@ -54,43 +52,31 @@ public class Services {
     public static synchronized void updateContact(Contact contact, String name, String phnumber, Group group) {
         setParser("Contact");
         parser.update(contact, new Contact(name, phnumber, group));
-        observerService.notifyObserver();
     }
 
     public static synchronized void updateGroup(String oldSt, String text) {
         setParser("Group");
         parser.update(new Group(oldSt), new Group(text));
-        observerService.notifyObserver();
     }
 
     public static synchronized void addGroup(String user,Group newGroup) {
         setParser("Group");
         parser.create(user, newGroup);
-        observerService.notifyObserver();
     }
 
     public static synchronized void addContact(String user,Contact contact) {
         setParser("Contact");
         parser.create(user, contact);
-        observerService.notifyObserver();
     }
 
     public static synchronized void delContact(Contact contact) {
         setParser("Contact");
         parser.delete(contact);
-        observerService.notifyObserver();
     }
 
     public static synchronized void delGroup(Group group) {
         setParser("Group");
         parser.delete(group);
-        observerService.notifyObserver();
-    }
-
-
-    public static ObserverService getObserverService()
-    {
-        return observerService;
     }
 
     public static synchronized boolean checkUser(String loginText, String passText) {

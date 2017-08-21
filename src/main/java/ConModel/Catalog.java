@@ -1,15 +1,9 @@
 package ConModel;
 
-
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import concontrol.CatalogObserver;
-import concontrol.Observable;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@JacksonXmlRootElement
 public class Catalog implements Serializable {
     private static Catalog ourInstance;
 
