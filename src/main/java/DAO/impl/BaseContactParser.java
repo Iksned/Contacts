@@ -9,12 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseContactParser implements ContactDAO{
-
-        private static final String DB_URL = "jdbc:postgresql://localhost:5432:postgres";
-
-        private static final String USER = "postgres";
-        private static final String PASS = "postgres";
+public class BaseContactParser extends BaseParser implements ContactDAO{
 
         private static final String addContactSQL = "{call addContact(?,?,?,?)}";
         private static final String getAllContactsSQL = "{call getallcontacts(?)}";
@@ -26,11 +21,8 @@ public class BaseContactParser implements ContactDAO{
         private Connection conn = null;
 
         public BaseContactParser() {
-            try {
-                conn = DriverManager.getConnection(DB_URL,USER,PASS);
-            }catch(SQLException se) {
-                se.printStackTrace();
-            }
+                super();
+                conn = super.connection;
         }
         @Override
         public void create(String user,Contact con) {
@@ -44,6 +36,7 @@ public class BaseContactParser implements ContactDAO{
                     stmt.executeQuery();
                     stmt.close();
                     conn.close();
+
             } catch (SQLException e) {
                     e.printStackTrace();
             }
@@ -105,14 +98,11 @@ public class BaseContactParser implements ContactDAO{
                     ResultSet rs = stmt.executeQuery();
                     result = mapper.map(rs);
                     rs.close();
+                    stmt.close();
+                    conn.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
             return result;
         }
 
@@ -124,7 +114,7 @@ public class BaseContactParser implements ContactDAO{
                 stmt.setString(1, newContact.getName());
                 stmt.setInt(2,Integer.parseInt(newContact.getPh_number()));
                 stmt.setString(3, newContact.getGroup().getName());
-                stmt.setString(4, oldContact.getGroup().getName());
+                stmt.setString(4, oldContact.getName());
                 stmt.setInt(5,Integer.parseInt(oldContact.getPh_number()));
                 stmt.executeQuery();
                 stmt.close();

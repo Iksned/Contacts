@@ -18,7 +18,6 @@ public class ObserverService implements Observable {
         }
             for (CatalogObserver observer : tempObservers)
                 observer.update();
-
     }
 
     @Override

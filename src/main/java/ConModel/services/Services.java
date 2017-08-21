@@ -3,8 +3,10 @@ package ConModel.services;
 import ConModel.Contact;
 import ConModel.Group;
 import DAO.*;
+import Utils.ResultTable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Services {
@@ -14,7 +16,7 @@ public class Services {
 
     private static synchronized void setParser(String chosen)
     {
-        parser  = creator.getParser(chosen);;
+        parser  = creator.getParser(chosen);
     }
 
     public static synchronized String[] getAllNames(String user) {
@@ -69,7 +71,7 @@ public class Services {
 
     public static synchronized void addContact(String user,Contact contact) {
         setParser("Contact");
-            parser.create(user, contact);
+        parser.create(user, contact);
         observerService.notifyObserver();
     }
 
@@ -95,5 +97,35 @@ public class Services {
         setParser("User");
         String result = (String)parser.read("logpass "+loginText +" "+ passText);
         return result.equals("Pass");
+    }
+
+    public static synchronized int countUsers() {
+        setParser("User");
+        return (Integer)parser.read("countUsers");
+    }
+
+    public static synchronized List<ResultTable> countUserContacts() {
+        setParser("User");
+        return (List<ResultTable>)parser.read("countUserContacts");
+    }
+
+    public static synchronized List<ResultTable> countUserGroups() {
+        setParser("User");
+        return (List<ResultTable>)parser.read("countUserGroups");
+    }
+
+    public static synchronized int avgContactsInGroups() {
+        setParser("User");
+        return (Integer)parser.read("avgContactsInGroups");
+    }
+
+    public static synchronized int avgUserContacts() {
+        setParser("User");
+        return (Integer)parser.read("avgUserContacts");
+    }
+
+    public static synchronized List<String> inactiveUsers() {
+        setParser("User");
+        return (List<String>)parser.read("inactiveUsers");
     }
 }

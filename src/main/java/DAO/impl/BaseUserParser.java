@@ -3,25 +3,28 @@ package DAO.impl;
 import ConModel.User;
 import DAO.BaseMapper;
 import DAO.BaseUserDAO;
+import Utils.ResultTable;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class BaseUserParser implements BaseUserDAO{
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432:postgres";
-
-    private static final String USER = "postgres";
-    private static final String PASS = "postgres";
+public class BaseUserParser extends BaseParser implements BaseUserDAO{
 
     private static final String checkUserSQL = "{call checkUser(?,?)}";
+    private static final String countUsers = "{call countUsers()}";
+    private static final String countUserContacts = "{call countUserContacts()}";
+    private static final String countUserGroups = "{call countUserGroups()}";
+    private static final String avgContactsInGroups = "{call avgUsersInGroups()}";
+    private static final String avgUserContacts = "{call avgUserContacts()}";
+    private static final String inactiveUsers = "{call inactiveUsers()}";
 
     private Connection conn = null;
 
     public BaseUserParser() {
-        try {
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
-        }catch(SQLException se) {
-            se.printStackTrace();
-        }
+        super();
+            conn = super.connection;
     }
 
     @Override
@@ -48,9 +51,83 @@ public class BaseUserParser implements BaseUserDAO{
                     stmt.setString(2, "null");
                 }
                 ResultSet rs = stmt.executeQuery();
-                if (rs != null)
-                    result = mapper.map(rs);
+
                 if (rs != null) {
+                    result = mapper.map(rs);
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else if (defPath[0].equals("countUsers")){
+            try {
+                mapper = new CountUsers();
+                stmt = conn.prepareCall(countUsers);
+                ResultSet rs = stmt.executeQuery();
+                if (rs != null) {
+                    result = mapper.map(rs);
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else if (defPath[0].equals("countUserContacts")){
+            try {
+                mapper = new TableMapper();
+                stmt = conn.prepareCall(countUserContacts);
+                ResultSet rs = stmt.executeQuery();
+                if (rs != null) {
+                    result = mapper.map(rs);
+                    rs.close();
+                }
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else if (defPath[0].equals("countUserGroups")) {
+            try {
+                mapper = new TableMapper();
+                stmt = conn.prepareCall(countUserGroups);
+                ResultSet rs = stmt.executeQuery();
+                if (rs != null) {
+                    result = mapper.map(rs);
+                    rs.close();
+                }
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else if (defPath[0].equals("avgContactsInGroups")){
+            try {
+                mapper = new CountUsers();
+                stmt = conn.prepareCall(avgContactsInGroups);
+                ResultSet rs = stmt.executeQuery();
+                if (rs != null) {
+                    result = mapper.map(rs);
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else if (defPath[0].equals("avgUserContacts")){
+            try {
+                mapper = new CountUsers();
+                stmt = conn.prepareCall(avgUserContacts);
+                ResultSet rs = stmt.executeQuery();
+                if (rs != null) {
+                    result = mapper.map(rs);
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else if (defPath[0].equals("inactiveUsers")){
+            try {
+                mapper = new LoginMapper();
+                stmt = conn.prepareCall(inactiveUsers);
+                ResultSet rs = stmt.executeQuery();
+                if (rs != null) {
+                    result = mapper.map(rs);
                     rs.close();
                 }
             } catch (SQLException e) {
@@ -90,6 +167,50 @@ public class BaseUserParser implements BaseUserDAO{
                     int count = rs.getInt(1);
                     if (count == 1)
                         result = "Pass";
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+    }
+
+    static class CountUsers implements BaseMapper{
+        @Override
+        public Object map(ResultSet rs) {
+            int result = 0;
+            try {
+                while (rs.next()) {
+                    result = rs.getInt(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+    }
+    static class TableMapper implements BaseMapper{
+        @Override
+        public Object map(ResultSet rs) {
+            List<ResultTable> result = new ArrayList<>();
+            try {
+                while (rs.next()) {
+                    result.add(new ResultTable(rs.getString(1),rs.getInt(2)));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+    }
+
+    static class LoginMapper implements BaseMapper{
+        @Override
+        public Object map(ResultSet rs) {
+            List<String> result = new ArrayList<>();
+            try {
+                while (rs.next()) {
+                    result.add(rs.getString(1));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

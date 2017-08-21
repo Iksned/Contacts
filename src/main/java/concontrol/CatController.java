@@ -2,16 +2,20 @@ package concontrol;
 
 import ConModel.*;
 import ConModel.services.Services;
-import conview.impl.Cookies;
-import conview.impl.Main_Window;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class CatController implements Serializable {
+public class CatController {
 
     private User currentUser;
+
        public CatController(){
+    }
+    public String getUsername()
+    {return currentUser.username;}
+
+    public CatController(User currentUser) {
+        this.currentUser = currentUser;
     }
 
     public void delGroup(Group group) {
@@ -73,7 +77,6 @@ public class CatController implements Serializable {
 
     public void chooseParser(User chosen) {
            currentUser = chosen;
-           new Main_Window(this,chosen.username);
     }
 
     public boolean checkUser(String loginText, String passText) {

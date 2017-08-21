@@ -8,11 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseGroupParser implements GroupDao {
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432:postgres";
-
-    private static final String USER = "postgres";
-    private static final String PASS = "postgres";
+public class BaseGroupParser extends BaseParser implements GroupDao {
 
     private static final String addGroupSQL = "{call addGroup(?,?)}";
     private static final String getAllGroupsSQL = "{call getallgroups(?)}";
@@ -23,11 +19,8 @@ public class BaseGroupParser implements GroupDao {
     private Connection conn = null;
 
     public BaseGroupParser() {
-        try {
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
-        }catch(SQLException se) {
-            se.printStackTrace();
-        }
+        super();
+            conn = super.connection;
     }
 
     @Override
@@ -40,6 +33,7 @@ public class BaseGroupParser implements GroupDao {
                 stmt.executeQuery();
                 stmt.close();
                 conn.close();
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -69,6 +63,7 @@ public class BaseGroupParser implements GroupDao {
             if (stmt != null) {
                 stmt.close();
                 conn.close();
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,8 +89,9 @@ public class BaseGroupParser implements GroupDao {
         try {
             if (stmt != null) {
                 stmt.close();
+                conn.close();
             }
-            conn.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -112,6 +108,7 @@ public class BaseGroupParser implements GroupDao {
                 stmt.executeQuery();
                 stmt.close();
                 conn.close();
+
         } catch (SQLException e) {
                 e.printStackTrace();
         }
@@ -126,6 +123,7 @@ public class BaseGroupParser implements GroupDao {
                 stmt.executeQuery();
                 stmt.close();
                 conn.close();
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
