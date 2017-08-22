@@ -16,7 +16,7 @@
 <h1>
 Average number of contacts in groups is
 <%@ page import="ConModel.services.Services" %>
-<p>(<%=Services.avgContactsInGroups()%>)</p>
+<p>(<%=Services.getInstace().avgContactsInGroups()%>)</p>
 </h1>
 <form>
   <input type="button" value="Go back!" onclick="history.back()">

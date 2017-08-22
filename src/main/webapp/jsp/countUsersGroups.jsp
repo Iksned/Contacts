@@ -15,8 +15,8 @@
 <center>
 <h1>
 
-<%@ page import="ConModel.services.Services,Utils.ResultTable,java.util.List" %>
-<%List<ResultTable> usersContacts = Services.countUserGroups();%>
+<%@ page import="ConModel.services.Services,ConModel.services.ResultTable,java.util.List" %>
+<%List<ResultTable> usersContacts = Services.getInstace().countUserGroups();%>
 <table>
 <tableborder="1" width="30%" cellpadding="3">
  <thead>

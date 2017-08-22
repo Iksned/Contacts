@@ -14,8 +14,8 @@
 </table>
 <center>
 <h1>
-<%@ page import="ConModel.services.Services,Utils.ResultTable,java.util.List" %>
-<%List<String> usersContacts = Services.inactiveUsers();%>
+<%@ page import="ConModel.services.Services,ConModel.services.ResultTable,java.util.List" %>
+<%List<String> usersContacts = Services.getInstace().inactiveUsers();%>
 <table>
 <tableborder="1" width="30%" cellpadding="3">
  <thead>

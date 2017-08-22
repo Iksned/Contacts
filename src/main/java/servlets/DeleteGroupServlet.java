@@ -15,18 +15,18 @@ public final class DeleteGroupServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
-
-        response.setContentType("text/html");
-        Enumeration<String> en = request.getParameterNames();
-        String paramName = "";
-        String name = "";
-        while (en.hasMoreElements()) {
-            paramName = en.nextElement();
-            if (name.equals(""))
-                name = request.getParameter(paramName);
+        synchronized (this) {
+            response.setContentType("text/html");
+            Enumeration<String> en = request.getParameterNames();
+            String paramName = "";
+            String name = "";
+            while (en.hasMoreElements()) {
+                paramName = en.nextElement();
+                if (name.equals(""))
+                    name = request.getParameter(paramName);
+            }
+            Services.getInstace().delGroup(new Group(name));
+            response.sendRedirect(request.getContextPath() + "/grouplist");
         }
-        Services.delGroup(new Group(name));
-        response.sendRedirect(request.getContextPath() + "/grouplist");
-
     }
 }

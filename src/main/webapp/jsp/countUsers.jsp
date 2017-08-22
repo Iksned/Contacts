@@ -16,7 +16,7 @@
 <h1>
 There is
 <%@ page import="ConModel.services.Services" %>
-<p>(<%=Services.countUsers()%>)</p>
+<p>(<%=Services.getInstace().countUsers()%>)</p>
   Users
 </h1>
 <form>

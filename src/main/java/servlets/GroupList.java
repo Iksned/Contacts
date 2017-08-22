@@ -20,26 +20,26 @@ public final class GroupList extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws IOException, ServletException {
-
         String userName = null;
-        String sessionID = null;
-        Cookie[] cookies = request.getCookies();
-        if(cookies !=null){
-            for(Cookie cookie : cookies){
-                if(cookie.getName().equals("JSESSIONID")) sessionID = cookie.getValue();
+        synchronized (this) {
+            String sessionID = null;
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("JSESSIONID")) sessionID = cookie.getValue();
+                }
+                HashMap<String, String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
+                userName = sessionsStorage.get(sessionID);
             }
-            HashMap<String,String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
-            userName = sessionsStorage.get(sessionID);
+
+            response.setContentType("text/html");
+            PrintWriter writer = response.getWriter();
+            List<Group> groupList = Services.getInstace().getGroups(userName);
+            String[] groupNames = new String[groupList.size()];
+            for (int i = 0; i < groupList.size(); i++)
+                groupNames[i] = groupList.get(i).getName();
+
+            writer.println(HtmlCreator.createGroupListHTML(userName, groupNames));
         }
-
-        response.setContentType("text/html");
-        PrintWriter writer = response.getWriter();
-        List<Group> groupList = Services.getGroups(userName);
-        String[] groupNames = new String[groupList.size()];
-        for (int i = 0;i<groupList.size();i++)
-            groupNames[i] = groupList.get(i).getName();
-
-        writer.println(HtmlCreator.createGroupListHTML(userName,groupNames));
-
     }
 }

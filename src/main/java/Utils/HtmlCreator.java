@@ -118,7 +118,7 @@ public class HtmlCreator {
 
         for (int i = 0;i<contactNames.length;i++)
         {
-            Contact contact = Services.getContactByName(contactNames[i],username);
+            Contact contact = Services.getInstace().getContactByName(contactNames[i],username);
             String name = contactNames[i];
             String phnumber = contact.getPh_number();
             String groupName = contact.getGroup().getName();
@@ -203,7 +203,7 @@ public class HtmlCreator {
         return html;
     }
 
-    public static String createUpdateContactHTML(String[] groupNames) {
+    public static String createUpdateContactHTML(String name,String phnum,String[] groupNames) {
         String html = "<html>\n" +
                 "<head>\n" +
                 "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
@@ -221,15 +221,15 @@ public class HtmlCreator {
                 "            <tbody>\n" +
                 "            <tr>\n" +
                 "                <td>Name</td>\n" +
-                "                <td><input type=\"text\" name=\"name\" value=\"\" /></td>\n" +
+                "                <td><input type=\"text\" name=\"newname\" value=\""+name+"\" /></td>\n" +
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td>Phone Number</td>\n" +
-                "                <td><input type=\"text\" name=\"ph_num\" value=\"\" /></td>\n" +
+                "                <td><input type=\"text\" name=\"newphnum\" value=\""+phnum+"\" /></td>\n" +
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td>Group</td>\n" +
-                "                <td><select name=\"groupname\" datatype=\"text\">\n";
+                "                <td><select name=\"newgroupname\" datatype=\"text\">\n";
         for (String groupName : groupNames) {
             html = html + "<option value=" + groupName + ">" + groupName + "</option>";
         }
@@ -250,7 +250,7 @@ public class HtmlCreator {
         return html;
     }
 
-    public static String createGroupListHTML(String usetName,String[] groupNames) {
+    public static String createGroupListHTML(String userName,String[] groupNames) {
         String html = "<html>\n" +
                 "<head>\n" +
                 "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
@@ -285,7 +285,7 @@ public class HtmlCreator {
                 "        <table border=\"1\" width=\"30%\" cellpadding=\"3\">\n" +
                 "            <thead>\n" +
                 "            <tr>\n" +
-                "                <th colspan=\"5\">" + usetName +" Groups</th>\n" +
+                "                <th colspan=\"5\">" + userName +" Groups</th>\n" +
                 "            </tr>\n" +
                 "            </thead>\n" +
                 "            <tbody>" +
@@ -368,7 +368,7 @@ public class HtmlCreator {
                 "            <tbody>\n" +
                 "            <tr>\n" +
                 "                <td>Name</td>\n" +
-                "                <td><input type=\"text\" name=\"name\" value=\""+name+"\" /></td>\n" +
+                "                <td><input type=\"text\" name=\"newname\" value=\""+name+"\" /></td>\n" +
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td><input type=\"submit\" value=\"Update\" /></td>\n" +

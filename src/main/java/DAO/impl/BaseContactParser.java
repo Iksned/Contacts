@@ -18,99 +18,154 @@ public class BaseContactParser extends BaseParser implements ContactDAO{
         private static final String updateContactSQL = "{call  updateContact(?,?,?,?,?)}";
         private static final String delContactSQL = "{call delContact(?,?)}";
 
-        private Connection conn = null;
+        private static BaseContactParser instace;
 
-        public BaseContactParser() {
-                super();
-                conn = super.connection;
+        public static BaseContactParser getInstace() {
+        if (instace == null)
+            synchronized (BaseUserParser.class) {
+                if (instace == null)
+                    instace = new BaseContactParser();
+            }
+        return instace;
         }
+
+        private BaseContactParser() {
+        }
+
         @Override
         public void create(String user,Contact con) {
-            PreparedStatement stmt;
+            PreparedStatement stmt = null;
+            Connection connection = null;
             try {
-                    stmt = conn.prepareCall(addContactSQL);
+                    connection = initConnection();
+                    stmt = connection.prepareCall(addContactSQL);
                     stmt.setString(1,user);
                     stmt.setString(2, con.getName());
                     stmt.setInt(3,Integer.parseInt(con.getPh_number()));
                     stmt.setString(4, con.getGroup().getName());
                     stmt.executeQuery();
-                    stmt.close();
-                    conn.close();
-
             } catch (SQLException e) {
                     e.printStackTrace();
+            }
+            finally {
+                try {
+                    if (stmt != null)
+                    stmt.close();
+                    if (connection != null)
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         @Override
         public Object read(String ob) {
             Object result = null;
-            PreparedStatement stmt = null;
-            String path = (String)ob;
-            String[] defPath = path.split(" ");
-            BaseMapper mapper;
-            if (defPath[0].equals("getNameByGroup")){
-                try {
-                    mapper = new ContactMapper();
-                    stmt = conn.prepareCall(getNameByGroupSQL);
-                    stmt.setString(1,defPath[2]);
-                    stmt.setString(2,defPath[1]);
-                    ResultSet rs = stmt.executeQuery();
-                    result = mapper.map(rs);
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            else if (defPath[0].equals("getContactByName")){
-                try {
-                    mapper = new ContactMapCreator();
-                    stmt = conn.prepareCall(getContactByNameSQL);
-                    stmt.setString(1,defPath[2]);
-                    stmt.setString(2,defPath[1]);
-                    ResultSet rs = stmt.executeQuery();
-                    result = mapper.map(rs);
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+            Connection connection = null;
             try {
-                if (stmt != null) {
-                    stmt.close();
-                    conn.close();
+                connection = initConnection();
+                PreparedStatement stmt = null;
+                String path = (String) ob;
+                String[] defPath = path.split(" ");
+                BaseMapper mapper;
+                if (defPath[0].equals("getNameByGroup")) {
+                    try {
+                        mapper = new ContactMapper();
+                        stmt = connection.prepareCall(getNameByGroupSQL);
+                        stmt.setString(1, defPath[2]);
+                        stmt.setString(2, defPath[1]);
+                        ResultSet rs = stmt.executeQuery();
+                        result = (List<String>)mapper.map(rs);
+                        rs.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (stmt != null) {
+                            try {
+                                stmt.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } else if (defPath[0].equals("getContactByName")) {
+                    try {
+                        mapper = new ContactMapCreator();
+                        stmt = connection.prepareCall(getContactByNameSQL);
+                        stmt.setString(1, defPath[2]);
+                        stmt.setString(2, defPath[1]);
+                        ResultSet rs = stmt.executeQuery();
+                        result = mapper.map(rs);
+                        rs.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        if (stmt != null) {
+                            try {
+                                stmt.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } finally {
+                try {
+                    if (connection != null)
+                        connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
+
             return result;
         }
 
         @Override
-        public Object readAll(String user){
-            Object result = null;
-            PreparedStatement stmt = null;
-            BaseMapper mapper;
+        public List<String> readAll(String user){
+            List<String> result = null;
+            Connection connection = null;
+            try {
+                connection = initConnection();
+                PreparedStatement stmt = null;
+                BaseMapper mapper;
                 try {
                     mapper = new ContactMapper();
-                    stmt = conn.prepareCall(getAllContactsSQL);
-                    stmt.setString(1,user);
+                    stmt = connection.prepareCall(getAllContactsSQL);
+                    stmt.setString(1, user);
                     ResultSet rs = stmt.executeQuery();
-                    result = mapper.map(rs);
+                    result = (List<String>)mapper.map(rs);
                     rs.close();
-                    stmt.close();
-                    conn.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (connection != null)
+                        connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             return result;
         }
 
         @Override
         public void update(Contact oldContact, Contact newContact) {
-            PreparedStatement stmt;
+            PreparedStatement stmt = null;
+            Connection connection = null;
             try {
-                stmt = conn.prepareCall(updateContactSQL);
+                connection = initConnection();
+                stmt = connection.prepareCall(updateContactSQL);
                 stmt.setString(1, newContact.getName());
                 stmt.setInt(2,Integer.parseInt(newContact.getPh_number()));
                 stmt.setString(3, newContact.getGroup().getName());
@@ -118,32 +173,49 @@ public class BaseContactParser extends BaseParser implements ContactDAO{
                 stmt.setInt(5,Integer.parseInt(oldContact.getPh_number()));
                 stmt.executeQuery();
                 stmt.close();
-                conn.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            }  finally {
+                try {
+                    if (stmt != null)
+                        stmt.close();
+                    if (connection != null)
+                        connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         @Override
         public void delete(Contact contact) {
-            PreparedStatement stmt;
+            PreparedStatement stmt = null;
+            Connection connection = null;
             try {
-                    stmt = conn.prepareCall(delContactSQL);
+                    connection = initConnection();
+                    stmt = connection.prepareCall(delContactSQL);
                     stmt.setString(1, contact.getName());
                     stmt.setInt(2,Integer.parseInt(contact.getPh_number()));
                     stmt.executeQuery();
                     stmt.close();
-                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }  finally {
+                try {
+                    if (stmt != null)
+                        stmt.close();
+                    if (connection != null)
+                        connection.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+            }
         }
 
         static class ContactMapper implements BaseMapper
         {
-
             @Override
-            public Object map(ResultSet rs) {
+            public List<String> map(ResultSet rs) {
                 List<String> res = new ArrayList<>();
                 try {
                     while (rs.next()) {
@@ -152,7 +224,7 @@ public class BaseContactParser extends BaseParser implements ContactDAO{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                return res.toArray(new String[0]);
+                return res;
             }
         }
 

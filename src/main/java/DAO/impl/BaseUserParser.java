@@ -3,11 +3,10 @@ package DAO.impl;
 import ConModel.User;
 import DAO.BaseMapper;
 import DAO.BaseUserDAO;
-import Utils.ResultTable;
+import ConModel.services.ResultTable;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class BaseUserParser extends BaseParser implements BaseUserDAO{
@@ -20,11 +19,19 @@ public class BaseUserParser extends BaseParser implements BaseUserDAO{
     private static final String avgUserContacts = "{call avgUserContacts()}";
     private static final String inactiveUsers = "{call inactiveUsers()}";
 
-    private Connection conn = null;
+    private static BaseUserParser instace;
 
-    public BaseUserParser() {
+    private BaseUserParser() {
         super();
-            conn = super.connection;
+    }
+
+    public static BaseUserParser getInstace() {
+        if (instace == null)
+                synchronized (BaseUserParser.class) {
+                    if (instace == null)
+                        instace = new BaseUserParser();
+                }
+        return instace;
     }
 
     @Override
@@ -34,114 +41,118 @@ public class BaseUserParser extends BaseParser implements BaseUserDAO{
     @Override
     public Object read(String ob) {
         Object result = null;
+        Connection connection = null;
         PreparedStatement stmt = null;
-        String path = (String)ob;
-        String[] defPath = path.split(" ");
-        BaseMapper mapper;
-        if (defPath[0].equals("logpass")) {
-            try {
-                mapper = new CheckUser();
-                stmt = conn.prepareCall(checkUserSQL);
-                if (defPath.length > 2) {
-                    stmt.setString(1, defPath[1]);
-                    stmt.setString(2, defPath[2]);
-                }
-                else {
-                    stmt.setString(1, "null");
-                    stmt.setString(2, "null");
-                }
-                ResultSet rs = stmt.executeQuery();
-
-                if (rs != null) {
-                    result = mapper.map(rs);
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (defPath[0].equals("countUsers")){
-            try {
-                mapper = new CountUsers();
-                stmt = conn.prepareCall(countUsers);
-                ResultSet rs = stmt.executeQuery();
-                if (rs != null) {
-                    result = mapper.map(rs);
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (defPath[0].equals("countUserContacts")){
-            try {
-                mapper = new TableMapper();
-                stmt = conn.prepareCall(countUserContacts);
-                ResultSet rs = stmt.executeQuery();
-                if (rs != null) {
-                    result = mapper.map(rs);
-                    rs.close();
-                }
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (defPath[0].equals("countUserGroups")) {
-            try {
-                mapper = new TableMapper();
-                stmt = conn.prepareCall(countUserGroups);
-                ResultSet rs = stmt.executeQuery();
-                if (rs != null) {
-                    result = mapper.map(rs);
-                    rs.close();
-                }
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (defPath[0].equals("avgContactsInGroups")){
-            try {
-                mapper = new CountUsers();
-                stmt = conn.prepareCall(avgContactsInGroups);
-                ResultSet rs = stmt.executeQuery();
-                if (rs != null) {
-                    result = mapper.map(rs);
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (defPath[0].equals("avgUserContacts")){
-            try {
-                mapper = new CountUsers();
-                stmt = conn.prepareCall(avgUserContacts);
-                ResultSet rs = stmt.executeQuery();
-                if (rs != null) {
-                    result = mapper.map(rs);
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (defPath[0].equals("inactiveUsers")){
-            try {
-                mapper = new LoginMapper();
-                stmt = conn.prepareCall(inactiveUsers);
-                ResultSet rs = stmt.executeQuery();
-                if (rs != null) {
-                    result = mapper.map(rs);
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
         try {
-            if (stmt != null) {
-                stmt.close();
-                conn.close();
+            connection = initConnection();
+            String path = (String) ob;
+            String[] defPath = path.split(" ");
+            BaseMapper mapper;
+            if (defPath[0].equals("logpass")) {
+                try {
+                    mapper = new CheckUser();
+                    stmt = connection.prepareCall(checkUserSQL);
+                    if (defPath.length > 2) {
+                        stmt.setString(1, defPath[1]);
+                        stmt.setString(2, defPath[2]);
+                    } else {
+                        stmt.setString(1, "null");
+                        stmt.setString(2, "null");
+                    }
+                    ResultSet rs = stmt.executeQuery();
+
+                    if (rs != null) {
+                        result = mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else if (defPath[0].equals("countUsers")) {
+                try {
+                    mapper = new CountUsers();
+                    stmt = connection.prepareCall(countUsers);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else if (defPath[0].equals("countUserContacts")) {
+                try {
+                    mapper = new TableMapper();
+                    stmt = connection.prepareCall(countUserContacts);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else if (defPath[0].equals("countUserGroups")) {
+                try {
+                    mapper = new TableMapper();
+                    stmt = connection.prepareCall(countUserGroups);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else if (defPath[0].equals("avgContactsInGroups")) {
+                try {
+                    mapper = new CountUsers();
+                    stmt = connection.prepareCall(avgContactsInGroups);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else if (defPath[0].equals("avgUserContacts")) {
+                try {
+                    mapper = new CountUsers();
+                    stmt = connection.prepareCall(avgUserContacts);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else if (defPath[0].equals("inactiveUsers")) {
+                try {
+                    mapper = new LoginMapper();
+                    stmt = connection.prepareCall(inactiveUsers);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                if (connection != null)
+                        connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
         return result;
     }
 

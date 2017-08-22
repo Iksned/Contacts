@@ -8,11 +8,11 @@ public class BaserParserCreator implements ParserCreator {
     @Override
     public CatalogDAO getParser(String parserName) {
         if (parserName.equals("User"))
-            return new BaseUserParser();
+            return BaseUserParser.getInstace();
         else if (parserName.equals("Contact"))
-           return new BaseContactParser();
+           return BaseContactParser.getInstace();
         else if (parserName.equals("Group"))
-            return new BaseGroupParser();
+            return BaseGroupParser.getInstace();
         return null;
     }
 }

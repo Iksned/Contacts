@@ -16,7 +16,7 @@
 <h1>
 Average number of user contacts is
 <%@ page import="ConModel.services.Services" %>
-<p>(<%=Services.avgUserContacts()%>)</p>
+<p>(<%=Services.getInstace().avgUserContacts()%>)</p>
 </h1>
 <form>
   <input type="button" value="Go back!" onclick="history.back()">

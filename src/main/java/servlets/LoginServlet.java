@@ -15,36 +15,36 @@ import javax.servlet.http.*;
 public final class LoginServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        synchronized (this) {
+            response.setContentType("text/html");
+            PrintWriter writer = response.getWriter();
 
-        response.setContentType("text/html");
-        PrintWriter writer = response.getWriter();
+            Enumeration<String> en = request.getParameterNames();
+            String paramName = "";
+            String name = "";
+            String pass = "";
+            while (en.hasMoreElements()) {
+                paramName = en.nextElement();
+                if (name.equals(""))
+                    name = request.getParameter(paramName);
+                else
+                    pass = request.getParameter(paramName);
+            }
 
-        Enumeration<String> en = request.getParameterNames();
-        String paramName = "";
-        String name = "";
-        String pass = "";
-        while (en.hasMoreElements()) {
-            paramName = en.nextElement();
-            if (name.equals(""))
-            name = request.getParameter(paramName);
-            else
-                pass = request.getParameter(paramName);
-        }
-
-            if (Services.checkUser(name,pass)) {
+            if (Services.getInstace().checkUser(name, pass)) {
                 HttpSession session = request.getSession();
 
-                Cookie cookie = new Cookie("user",name);
+                Cookie cookie = new Cookie("user", name);
                 response.addCookie(cookie);
 
-                HashMap<String,String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
-                sessionsStorage.put(session.getId(),name);
+                HashMap<String, String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
+                sessionsStorage.put(session.getId(), name);
                 SessionStorage.setSessions(sessionsStorage);
 
                 response.sendRedirect(request.getContextPath() + "/contactlist");
-            }
-            else {
+            } else {
                 writer.println(HtmlCreator.createFailLoginHTML());
             }
+        }
     }
 } 

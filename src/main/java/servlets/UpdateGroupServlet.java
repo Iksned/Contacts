@@ -17,34 +17,22 @@ public final class UpdateGroupServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws IOException, ServletException {
-        response.setContentType("text/html");
-        PrintWriter writer = response.getWriter();
-
-        Enumeration<String> en = request.getParameterNames();
-        String paramName = "";
-        while (en.hasMoreElements()) {
-            paramName = en.nextElement();
-            if (name.equals(""))
-                name = request.getParameter(paramName);
+        synchronized (this) {
+            response.setContentType("text/html");
+            PrintWriter writer = response.getWriter();
+            name = request.getParameter("name");
+            writer.println(HtmlCreator.createUpdateGroupHTML(name));
         }
-        writer.println(HtmlCreator.createUpdateGroupHTML(name));
     }
 
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
-
-        response.setContentType("text/html");
-        Enumeration<String> en = request.getParameterNames();
-        String paramName = "";
-        String newName ="";
-        while (en.hasMoreElements()) {
-            paramName = en.nextElement();
-            if (newName.equals(""))
-                newName = request.getParameter(paramName);
+        synchronized (this) {
+            response.setContentType("text/html");
+            String newName = request.getParameter("newname");
+            Services.getInstace().updateGroup(name, newName);
+            response.sendRedirect(request.getContextPath() + "/grouplist");
         }
-        Services.updateGroup(name,newName);
-        response.sendRedirect(request.getContextPath() + "/grouplist");
-
     }
 }
