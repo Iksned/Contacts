@@ -57,40 +57,10 @@ public class BaseGroupParser extends BaseParser implements GroupDao {
     }
 
     @Override
-    public Object read(String ob) {
-        Object result = null;
-        Connection connection = null;
-        PreparedStatement stmt = null;
-        try {
-            connection = initConnection();
-            String path = (String) ob;
-            String[] defPath = path.split(" ");
-            BaseMapper mapper;
-            if (defPath[0].equals("getGroupByName")) {
-                try {
-                    mapper = new GroupMapper();
-                    stmt = connection.prepareCall(getGroupByNameSQL);
-                    stmt.setString(1, defPath[2]);
-                    stmt.setString(2, defPath[1]);
-                    ResultSet rs = stmt.executeQuery();
-                    result = mapper.map(rs);
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                if (connection != null)
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
+    public Object read(String input) {
+        String[] defPath = input.split(" ");
+        GroupHandler handler = getHandler(defPath[0]);
+        return handler.handle(input);
     }
 
     @Override
@@ -174,9 +144,9 @@ public class BaseGroupParser extends BaseParser implements GroupDao {
             }
         }
 
-    static class GroupMapper implements BaseMapper{
+    static class GroupMapper implements BaseMapper<List<String>>{
         @Override
-        public Object map(ResultSet rs) {
+        public List<String> map(ResultSet rs) {
             List<String> res = new ArrayList<>();
             try {
                 while (rs.next()) {
@@ -185,7 +155,54 @@ public class BaseGroupParser extends BaseParser implements GroupDao {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            return res.toArray(new String[0]);
+            return res;
+        }
+    }
+
+    private GroupHandler getHandler(String name){
+        if (name.equals("getGroupByName"))
+            return new NameHandler();
+        return null;
+    }
+
+    public interface GroupHandler<R>{
+        R handle(String input);
+    }
+
+    private class NameHandler implements GroupHandler<List<String>>
+    {
+        @Override
+        public List<String> handle(String input) {
+            List<String> result = null;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                String[] defPath = input.split(" ");
+                BaseMapper mapper;
+                try {
+                    mapper = new GroupMapper();
+                    stmt = connection.prepareCall(getGroupByNameSQL);
+                    stmt.setString(1, defPath[2]);
+                    stmt.setString(2, defPath[1]);
+                    ResultSet rs = stmt.executeQuery();
+                    result = (List<String>)mapper.map(rs);
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
         }
     }
 }

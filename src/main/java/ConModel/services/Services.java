@@ -42,10 +42,10 @@ public class Services {
 
     public synchronized List<Group> getGroups(String user) {
         setParser("Group");
-        String[] finList = (String[])parser.readAll(user);
+        List<String> finList = (List<String>)parser.readAll(user);
         List<Group> groupList = new ArrayList<>();
-        for (int i = 0;i<finList.length;i++)
-        groupList.add(i,new Group(finList[i]));
+        for (int i = 0;i<finList.size();i++)
+        groupList.add(i,new Group(finList.get(i)));
         return groupList;
     }
 

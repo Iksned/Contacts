@@ -39,121 +39,10 @@ public class BaseUserParser extends BaseParser implements BaseUserDAO{
     }
 
     @Override
-    public Object read(String ob) {
-        Object result = null;
-        Connection connection = null;
-        PreparedStatement stmt = null;
-        try {
-            connection = initConnection();
-            String path = (String) ob;
-            String[] defPath = path.split(" ");
-            BaseMapper mapper;
-            if (defPath[0].equals("logpass")) {
-                try {
-                    mapper = new CheckUser();
-                    stmt = connection.prepareCall(checkUserSQL);
-                    if (defPath.length > 2) {
-                        stmt.setString(1, defPath[1]);
-                        stmt.setString(2, defPath[2]);
-                    } else {
-                        stmt.setString(1, "null");
-                        stmt.setString(2, "null");
-                    }
-                    ResultSet rs = stmt.executeQuery();
-
-                    if (rs != null) {
-                        result = mapper.map(rs);
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else if (defPath[0].equals("countUsers")) {
-                try {
-                    mapper = new CountUsers();
-                    stmt = connection.prepareCall(countUsers);
-                    ResultSet rs = stmt.executeQuery();
-                    if (rs != null) {
-                        result = mapper.map(rs);
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else if (defPath[0].equals("countUserContacts")) {
-                try {
-                    mapper = new TableMapper();
-                    stmt = connection.prepareCall(countUserContacts);
-                    ResultSet rs = stmt.executeQuery();
-                    if (rs != null) {
-                        result = mapper.map(rs);
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else if (defPath[0].equals("countUserGroups")) {
-                try {
-                    mapper = new TableMapper();
-                    stmt = connection.prepareCall(countUserGroups);
-                    ResultSet rs = stmt.executeQuery();
-                    if (rs != null) {
-                        result = mapper.map(rs);
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else if (defPath[0].equals("avgContactsInGroups")) {
-                try {
-                    mapper = new CountUsers();
-                    stmt = connection.prepareCall(avgContactsInGroups);
-                    ResultSet rs = stmt.executeQuery();
-                    if (rs != null) {
-                        result = mapper.map(rs);
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else if (defPath[0].equals("avgUserContacts")) {
-                try {
-                    mapper = new CountUsers();
-                    stmt = connection.prepareCall(avgUserContacts);
-                    ResultSet rs = stmt.executeQuery();
-                    if (rs != null) {
-                        result = mapper.map(rs);
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else if (defPath[0].equals("inactiveUsers")) {
-                try {
-                    mapper = new LoginMapper();
-                    stmt = connection.prepareCall(inactiveUsers);
-                    ResultSet rs = stmt.executeQuery();
-                    if (rs != null) {
-                        result = mapper.map(rs);
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                if (connection != null)
-                        connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
+    public Object read(String input) {
+        String[] defPath = input.split(" ");
+        UserHandler handler = getHandler(defPath[0]);
+        return handler.handle(input);
     }
 
     @Override
@@ -229,4 +118,281 @@ public class BaseUserParser extends BaseParser implements BaseUserDAO{
             return result;
         }
     }
+
+    private UserHandler getHandler(String name){
+        if (name.equals("logpass"))
+            return new CheckUserHandler();
+        if (name.equals("countUsers"))
+            return new CountUsersHandler();
+        if (name.equals("countUserContacts"))
+            return new CountUserContactsHanler();
+        if (name.equals("countUserGroups"))
+            return new CountUserGroupsHandler();
+        if (name.equals("avgContactsInGroups"))
+            return new AvgContactsInGroupsHandler();
+        if (name.equals("avgUserContacts"))
+            return new AvgUserContactsHandler();
+        if (name.equals("inactiveUsers"))
+            return new InactiveUsersHandler();
+        return null;
+    }
+
+    public interface UserHandler<R>{
+        R handle(String input);
+    }
+
+    private class CheckUserHandler implements UserHandler<String> {
+        @Override
+        public String handle(String input) {
+            String result = null;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                String[] defPath = input.split(" ");
+                BaseMapper mapper;
+                    try {
+                        mapper = new CheckUser();
+                        stmt = connection.prepareCall(checkUserSQL);
+                        if (defPath.length > 2) {
+                            stmt.setString(1, defPath[1]);
+                            stmt.setString(2, defPath[2]);
+                        } else {
+                            stmt.setString(1, "null");
+                            stmt.setString(2, "null");
+                        }
+                        ResultSet rs = stmt.executeQuery();
+
+                        if (rs != null) {
+                            result = (String)mapper.map(rs);
+                            rs.close();
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    private class CountUsersHandler implements UserHandler<Integer> {
+        @Override
+        public Integer handle(String input) {
+            int result = 0;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                BaseMapper mapper;
+                try {
+                    mapper = new CountUsers();
+                    stmt = connection.prepareCall(countUsers);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = (int) mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    private class CountUserContactsHanler implements UserHandler<List<ResultTable>> {
+        @Override
+        public List<ResultTable> handle(String input) {
+            List<ResultTable> result = null;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                BaseMapper mapper;
+                try {
+                    mapper = new TableMapper();
+                    stmt = connection.prepareCall(countUserContacts);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = (List<ResultTable>)mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    private class CountUserGroupsHandler implements UserHandler<List<ResultTable>> {
+        @Override
+        public List<ResultTable> handle(String input) {
+            List<ResultTable> result = null;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                BaseMapper mapper;
+                try {
+                    mapper = new TableMapper();
+                    stmt = connection.prepareCall(countUserGroups);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = (List<ResultTable>)mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    private class AvgContactsInGroupsHandler implements UserHandler<Integer> {
+        @Override
+        public Integer handle(String input) {
+            int result = 0;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                BaseMapper mapper;
+                try {
+                    mapper = new CountUsers();
+                    stmt = connection.prepareCall(avgContactsInGroups);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = (Integer) mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    private class AvgUserContactsHandler implements UserHandler<Integer> {
+        @Override
+        public Integer handle(String input) {
+            int result = 0;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                BaseMapper mapper;
+                try {
+                    mapper = new CountUsers();
+                    stmt = connection.prepareCall(avgUserContacts);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = (Integer) mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    private class InactiveUsersHandler implements UserHandler<List<String>> {
+        @Override
+        public List<String> handle(String input) {
+            List<String> result = null;
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = initConnection();
+                BaseMapper mapper;
+                try {
+                    mapper = new LoginMapper();
+                    stmt = connection.prepareCall(inactiveUsers);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs != null) {
+                        result = (List<String>)mapper.map(rs);
+                        rs.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                        if (connection != null)
+                            connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
 }

@@ -2,6 +2,6 @@ package DAO;
 
 import java.sql.ResultSet;
 
-public interface BaseMapper {
-    public Object map(ResultSet resultSet);
+public interface BaseMapper<R> {
+    public R map(ResultSet resultSet);
 }
