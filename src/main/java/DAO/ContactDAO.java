@@ -2,18 +2,20 @@ package DAO;
 
 import ConModel.Contact;
 
+import java.util.List;
+
 public interface ContactDAO extends CatalogDAO<Contact> {
     @Override
-    void create(String user, Contact ob);
+    void create(Contact ob);
 
     @Override
-    Object read(String ob);
+    Contact read(String id);
 
     @Override
-    Object readAll(String ob);
+    List<Contact> readAll(String ob);
 
     @Override
-    void update(Contact oldOb, Contact newOb);
+    void update(Contact newOb);
 
     @Override
     void delete(Contact ob);

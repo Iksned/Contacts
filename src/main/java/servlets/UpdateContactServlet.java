@@ -2,15 +2,15 @@ package servlets;
 
 import ConModel.Contact;
 import ConModel.Group;
+import ConModel.User;
 import ConModel.services.Services;
-import Utils.HtmlCreator;
-import Utils.SessionStorage;
+import utils.HtmlCreator;
+import utils.SessionStorage;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -18,49 +18,44 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public final class UpdateContactServlet extends HttpServlet {
-    private String name = "";
-    private String ph_number = "";
-    private String groupName = "";
+
+    Contact updatedContact;
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws IOException, ServletException {
-        synchronized (this) {
-            String userName = null;
+            User currentUser = null;
             String sessionID = null;
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("JSESSIONID")) sessionID = cookie.getValue();
                 }
-                HashMap<String, String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
-                userName = sessionsStorage.get(sessionID);
+                Map<String, User> sessionsStorage = SessionStorage.getSessions();
+                currentUser = sessionsStorage.get(sessionID);
             }
 
             response.setContentType("text/html");
             PrintWriter writer = response.getWriter();
-            List<Group> groupList = Services.getInstace().getGroups(userName);
-            String[] groupNames = new String[groupList.size()];
-            for (int i = 0; i < groupList.size(); i++)
-                groupNames[i] = groupList.get(i).getName();
-            name = request.getParameter("name");
-            ph_number = request.getParameter("phnum");
-            groupName = request.getParameter("groupname");
+            List<Group> groupList = Services.getInstace().getGroups(currentUser.getUsername());
+            String contactId = request.getParameter("id");
+            updatedContact = Services.getInstace().getContactById(Integer.parseInt(contactId));
 
-            writer.println(HtmlCreator.createUpdateContactHTML(name,ph_number,groupNames));
-        }
+            writer.println(HtmlCreator.createUpdateContactHTML(updatedContact,groupList));
     }
 
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
-        synchronized (this) {
             response.setContentType("text/html");
             String newName = request.getParameter("newname");
             String newPhNumber = request.getParameter("newphnum");
-            String newgroupName = request.getParameter("newgroupname");
-            Services.getInstace().updateContact(new Contact(name, ph_number, new Group(groupName)), newName, newPhNumber, new Group(newgroupName));
+            String groupid = request.getParameter("groupid");
+            Group newGroup = Services.getInstace().getGroupById(Integer.parseInt(groupid));
+            updatedContact.setName(newName);
+            updatedContact.setPh_number(Integer.parseInt(newPhNumber));
+            updatedContact.setGroup(newGroup);
+            Services.getInstace().updateContact(updatedContact);
             response.sendRedirect(request.getContextPath() + "/contactlist");
-        }
     }
 }

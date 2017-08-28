@@ -1,13 +1,13 @@
 package servlets;
 
+import ConModel.User;
 import ConModel.services.Services;
-import Utils.SessionStorage;
-import Utils.HtmlCreator;
+import utils.SessionStorage;
+import utils.HtmlCreator;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -15,21 +15,11 @@ import javax.servlet.http.*;
 public final class LoginServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        synchronized (this) {
             response.setContentType("text/html");
             PrintWriter writer = response.getWriter();
 
-            Enumeration<String> en = request.getParameterNames();
-            String paramName = "";
-            String name = "";
-            String pass = "";
-            while (en.hasMoreElements()) {
-                paramName = en.nextElement();
-                if (name.equals(""))
-                    name = request.getParameter(paramName);
-                else
-                    pass = request.getParameter(paramName);
-            }
+            String name = request.getParameter("uname");
+            String pass = request.getParameter("pass");
 
             if (Services.getInstace().checkUser(name, pass)) {
                 HttpSession session = request.getSession();
@@ -37,14 +27,14 @@ public final class LoginServlet extends HttpServlet {
                 Cookie cookie = new Cookie("user", name);
                 response.addCookie(cookie);
 
-                HashMap<String, String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
-                sessionsStorage.put(session.getId(), name);
+                User currentUser = Services.getInstace().getUserById(name);
+                Map<String, User> sessionsStorage = SessionStorage.getSessions();
+                sessionsStorage.put(session.getId(), currentUser);
                 SessionStorage.setSessions(sessionsStorage);
 
                 response.sendRedirect(request.getContextPath() + "/contactlist");
             } else {
                 writer.println(HtmlCreator.createFailLoginHTML());
             }
-        }
     }
 } 

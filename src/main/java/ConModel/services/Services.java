@@ -2,16 +2,19 @@ package ConModel.services;
 
 import ConModel.Contact;
 import ConModel.Group;
+import ConModel.User;
 import DAO.*;
+import DAO.hibernate.AnalyticalDAO;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Services {
-    private static ParserCreator creator = new BaserParserCreator();
-    private static CatalogDAO parser;
+    private static final Logger log = Logger.getLogger(Services.class);
+    private DAOcreator creator = new BaserDAOcreator();
+    private  CatalogDAO parser;
 
-    private static Services instace;
+    private volatile static Services instace;
 
     private Services() {
     }
@@ -27,59 +30,49 @@ public class Services {
 
     private synchronized void setParser(String chosen)
     {
-        parser  = creator.getParser(chosen);
+        parser  = creator.getDAO(chosen);
     }
 
-    public synchronized List<String> getAllNames(String user) {
+    public synchronized List<Contact> getAllContacts(String user) {
         setParser("Contact");
-        return  (List<String>) parser.readAll(user);
-    }
-
-    public synchronized List<String> getNamesByGroup(String group,String user) {
-        setParser("Contact");
-        return  (List<String>) parser.read("getNameByGroup "+group +" "+user);
+        return  (List<Contact>) parser.readAll(user);
     }
 
     public synchronized List<Group> getGroups(String user) {
         setParser("Group");
-        List<String> finList = (List<String>)parser.readAll(user);
-        List<Group> groupList = new ArrayList<>();
-        for (int i = 0;i<finList.size();i++)
-        groupList.add(i,new Group(finList.get(i)));
+        List<Group> groupList = (List<Group>)parser.readAll(user);
         return groupList;
     }
 
-    public synchronized Group getGroupByName(String newGroup,String user) {
+    public synchronized Group getGroupById(int id) {
         setParser("Group");
-        String[] finList = (String[])parser.read("getGroupByName " + newGroup+" "+user);
-        if (finList.length == 0)
-            return new Group("");
-        return new Group(finList[0]);
+        Group group = (Group)parser.read(""+id);
+        return group;
     }
 
-    public synchronized Contact getContactByName(String selectedValue,String user) {
+    public synchronized Contact getContactById(int id) {
         setParser("Contact");
-        return (Contact) parser.read("getContactByName "+selectedValue + " " + user);
+        return (Contact) parser.read(""+id);
     }
 
-    public synchronized void updateContact(Contact contact, String name, String phnumber, Group group) {
+    public synchronized void updateContact(Contact contact) {
         setParser("Contact");
-        parser.update(contact, new Contact(name, phnumber, group));
+        parser.update(contact);
     }
 
-    public synchronized void updateGroup(String oldSt, String text) {
+    public synchronized void updateGroup(Group newGroup) {
         setParser("Group");
-        parser.update(new Group(oldSt), new Group(text));
+        parser.update(newGroup);
     }
 
-    public synchronized void addGroup(String user,Group newGroup) {
+    public synchronized void addGroup(Group newGroup) {
         setParser("Group");
-        parser.create(user, newGroup);
+        parser.create(newGroup);
     }
 
-    public synchronized void addContact(String user,Contact contact) {
+    public synchronized void addContact(Contact contact) {
         setParser("Contact");
-        parser.create(user, contact);
+        parser.create(contact);
     }
 
     public synchronized void delContact(Contact contact) {
@@ -92,39 +85,41 @@ public class Services {
         parser.delete(group);
     }
 
-    public synchronized boolean checkUser(String loginText, String passText) {
+    public synchronized User getUserById(String username){
         setParser("User");
-        String result = (String)parser.read("logpass "+loginText +" "+ passText);
-        return result.equals("Pass");
+        return (User)parser.read(username);
     }
 
-    public synchronized int countUsers() {
+    public synchronized List<User> getAllUsers(){
         setParser("User");
-        return (Integer)parser.read("countUsers");
+        return parser.readAll("users");
+    }
+
+    public synchronized boolean checkUser(String username, String password) {
+        return AnalyticalDAO.getInstace().chekUser(username,password);
+    }
+
+    public synchronized long countUsers() {
+        return AnalyticalDAO.getInstace().countUsers();
     }
 
     public synchronized List<ResultTable> countUserContacts() {
-        setParser("User");
-        return (List<ResultTable>)parser.read("countUserContacts");
+          return AnalyticalDAO.getInstace().countUsersContacts();
     }
 
     public synchronized List<ResultTable> countUserGroups() {
-        setParser("User");
-        return (List<ResultTable>)parser.read("countUserGroups");
+       return AnalyticalDAO.getInstace().countUsersGroups();
     }
 
     public synchronized int avgContactsInGroups() {
-        setParser("User");
-        return (Integer)parser.read("avgContactsInGroups");
+        return AnalyticalDAO.getInstace().avgContactsInGroups();
     }
 
     public synchronized int avgUserContacts() {
-        setParser("User");
-        return (Integer)parser.read("avgUserContacts");
+        return AnalyticalDAO.getInstace().avgUsersContacts();
     }
 
     public synchronized List<String> inactiveUsers() {
-        setParser("User");
-        return (List<String>)parser.read("inactiveUsers");
+        return AnalyticalDAO.getInstace().inactiveUsers();
     }
 }

@@ -13,25 +13,25 @@ $$
 LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION countUserContacts() RETURNS TABLE(Login text, contacts bigint)
-AS $$ SELECT Login, COUNT(ContactID)
+AS $$ SELECT Login, COUNT(UsersContact.ContactID)
 FROM UsersContact
 GROUP BY Login
 $$
 LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION countUserGroups() RETURNS TABLE(Login text, groups bigint)
-AS $$ SELECT Login, COUNT(GroupName)
+AS $$ SELECT Login, COUNT(GroupId)
 FROM UsersGroup
 GROUP BY Login
 $$
 LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION avgUsersInGroups() RETURNS numeric AS $$
-WITH ContactINGroup AS (SELECT count(ContactGroup.ContactID) AS count,
-          ContactGroup.GroupName AS Groups
+WITH ContactINGroup AS (SELECT count(ContactGroup.ContactID) AS count1,
+          ContactGroup.GroupId AS Groups
          FROM ContactGroup
-        GROUP BY ContactGroup.GroupName)
-SELECT AVG(count)
+        GROUP BY ContactGroup.GroupId)
+SELECT AVG(count1)
 FROM ContactINGroup
 $$
 LANGUAGE SQL;
@@ -62,16 +62,16 @@ LANGUAGE SQL;
 CREATE OR REPLACE FUNCTION getAllContacts(login1 text) RETURNS TABLE(id int,name varchar,phone_num int)
 AS $$ SELECT *
 FROM Contacts
-WHERE Contacts.ContactID IN (SELECT ContactID as ContactID
+WHERE Contacts.ContactID IN (SELECT UsersContact.ContactID as ContactID
                                 FROM UsersContact
                                 WHERE Login = login1)
 $$
 LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION getAllGroups(login1 text) RETURNS TABLE(groupname varchar)
+CREATE OR REPLACE FUNCTION getAllGroups(login1 text) RETURNS TABLE(groupid int,groupname varchar)
 AS $$ SELECT *
 FROM Groups
-WHERE Groups.Name IN (SELECT GroupName
+WHERE Groups.GroupId IN (SELECT GroupId
                       FROM UsersGroup
                       WHERE Login = login1)
 $$
@@ -84,14 +84,14 @@ WHERE Contacts.name = cname AND Contacts.Phone_Number = ph_num AND UsersContact.
 $$
 LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION getGroup(login1 varchar, gname varchar) RETURNS TABLE(groupname varchar)
-AS $$ SELECT Groups.name
-FROM Groups JOIN UsersGroup ON Groups.name = UsersGroup.GroupName
-WHERE Groups.name = gname AND UsersGroup.Login = login1
+CREATE OR REPLACE FUNCTION getGroup(login1 varchar, gid int) RETURNS TABLE(groupid int,groupname varchar)
+AS $$ SELECT Groups.GroupId,Groups.name
+FROM Groups JOIN UsersGroup ON Groups.GroupId = UsersGroup.GroupId
+WHERE Groups.GroupId = gid AND UsersGroup.Login = login1
 $$
 LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION  addContact(login1 varchar,cname varchar,num int,groupname varchar) RETURNS void AS
+CREATE OR REPLACE FUNCTION  addContact(login1 varchar,cname varchar,num int,gid int) RETURNS void AS
 $$
 BEGIN
 IF (SELECT COUNT(Contacts.ContactID) AS Result
@@ -103,7 +103,7 @@ VALUES ((SELECT MAX(ContactID) FROM Contacts)+1,cname,num);
 INSERT INTO UsersContact
 VALUES (login1,(SELECT MAX(ContactID) FROM Contacts));
 INSERT INTO ContactGroup
-VALUES ((SELECT MAX(ContactID) FROM Contacts),groupname);
+VALUES ((SELECT MAX(ContactID) FROM Contacts),gid);
 END IF;
 END
 $$
@@ -113,19 +113,19 @@ CREATE OR REPLACE FUNCTION  addGroup(login1 varchar,groupname1 varchar) RETURNS 
 $$
 BEGIN
 IF (SELECT COUNT(Groups.name) AS Result
-                  FROM Groups JOIN UsersGroup ON Groups.name = UsersGroup.GroupName
+                  FROM Groups JOIN UsersGroup ON Groups.GroupId = UsersGroup.GroupId
                   WHERE Groups.name = groupname1  AND UsersGroup.Login = login1) = 0
 THEN
-INSERT INTO Groups (name)
-VALUES (groupname1);
-INSERT INTO UsersGroup(Login,GroupName)
-VALUES (login1,groupname1);
+INSERT INTO Groups (GroupId,name)
+VALUES ((SELECT MAX(GroupId) FROM Groups)+1,groupname1);
+INSERT INTO UsersGroup(Login,GroupId)
+VALUES (login1,(SELECT MAX(GroupId) FROM Groups));
 END IF;
 END
 $$
 LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION  updateContact(cname varchar,num int,groupname1 varchar,oldcname varchar,oldnum int) RETURNS void AS
+CREATE OR REPLACE FUNCTION  updateContact(cname varchar,num int,gid int,oldcname varchar,oldnum int) RETURNS void AS
 $$
 DECLARE
 ID int;
@@ -140,19 +140,19 @@ SET name = cname, Phone_Number = num
 WHERE name = oldcname AND Phone_Number = oldnum;
 
 UPDATE ContactGroup
-SET GroupName = groupname1
+SET GroupId = gid
 WHERE ContactID = ID;
 END
 $$
 LANGUAGE 'plpgsql';
 
 
-CREATE OR REPLACE FUNCTION  updateGroup(groupname text,oldgroup text) RETURNS void AS
+CREATE OR REPLACE FUNCTION  updateGroup(gid int,groupname text) RETURNS void AS
 $$
 BEGIN
 UPDATE Groups
 SET name = groupname
-WHERE name = oldgroup;
+WHERE GroupId = gid;
 END
 $$
 LANGUAGE 'plpgsql';
@@ -166,31 +166,31 @@ END
 $$
 LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION  delGroup(groupname text) RETURNS void AS
+CREATE OR REPLACE FUNCTION  delGroup(gid int) RETURNS void AS
 $$
 BEGIN
 DELETE FROM Groups
-WHERE name = groupname;
+WHERE GroupId = gid;
 END
 $$
 LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION getNameByGroup(login1 varchar,groupname1 varchar) RETURNS TABLE(Name varchar)
+CREATE OR REPLACE FUNCTION getNameByGroup(login1 varchar,gid int) RETURNS TABLE(Name varchar)
 AS
 $$
 SELECT Name
 FROM Contacts
-Where ContactID IN (Select ContactID FROM ContactGroup Where GroupName = groupname1)
-AND ContactID IN (Select ContactID FROM UsersContact Where Login = login1)
+Where Contacts.ContactID IN (Select ContactGroup.ContactID FROM ContactGroup Where GroupId = gid)
+AND Contacts.ContactID IN (Select UsersContact.ContactID FROM UsersContact Where Login = login1)
 $$
 LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION getContactByName(login1 varchar,cname varchar) RETURNS TABLE(Name varchar,Phone_Number int,groupname varchar)
+CREATE OR REPLACE FUNCTION getContactByName(login1 varchar,cname varchar) RETURNS TABLE(id int,Name varchar,Phone_Number int,gid int)
 AS
 $$
-SELECT Name,Phone_Number,Groupname
+SELECT Contacts.Contactid,Name,Phone_Number,GroupId
 FROM Contacts JOIN ContactGroup ON Contacts.ContactID = ContactGroup.ContactID
-WHERE Contacts.ContactID IN (Select ContactID FROM UsersContact Where Login = login1)
+WHERE Contacts.ContactID IN (Select UsersContact.ContactID FROM UsersContact Where Login = login1)
 AND Contacts.name = cname;
 $$
 LANGUAGE SQL;

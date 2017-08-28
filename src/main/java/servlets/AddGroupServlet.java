@@ -1,14 +1,14 @@
 package servlets;
 
 import ConModel.Group;
+import ConModel.User;
 import ConModel.services.Services;
-import Utils.HtmlCreator;
-import Utils.SessionStorage;
+import utils.HtmlCreator;
+import utils.SessionStorage;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -30,29 +30,22 @@ public final class AddGroupServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
-        synchronized (this) {
-            String userName = null;
+            User currentUser = null;
             String sessionID = null;
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("JSESSIONID")) sessionID = cookie.getValue();
                 }
-                HashMap<String, String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
-                userName = sessionsStorage.get(sessionID);
+                Map<String, User> sessionsStorage = SessionStorage.getSessions();
+                currentUser = sessionsStorage.get(sessionID);
             }
 
             response.setContentType("text/html");
-            Enumeration<String> en = request.getParameterNames();
-            String paramName = "";
-            String name = "";
-            while (en.hasMoreElements()) {
-                paramName = en.nextElement();
-                if (name.equals(""))
-                    name = request.getParameter(paramName);
-            }
-            Services.getInstace().addGroup(userName, new Group(name));
+            String name = request.getParameter("name");
+            Group newGroup = new Group(name);
+            newGroup.setUser(currentUser);
+            Services.getInstace().addGroup(newGroup);
             response.sendRedirect(request.getContextPath() + "/grouplist");
-        }
     }
 }

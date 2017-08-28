@@ -1,13 +1,15 @@
 package servlets;
 
+import ConModel.Contact;
+import ConModel.User;
 import ConModel.services.Services;
-import Utils.HtmlCreator;
-import Utils.SessionStorage;
+import utils.HtmlCreator;
+import utils.SessionStorage;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -19,22 +21,20 @@ public final class ContactList extends HttpServlet {
     public void doGet(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
-        synchronized (this) {
-            String userName = null;
+            User currentUser = null;
             String sessionID = null;
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("JSESSIONID")) sessionID = cookie.getValue();
                 }
-                HashMap<String, String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
-                userName = sessionsStorage.get(sessionID);
+                Map<String, User> sessionsStorage = SessionStorage.getSessions();
+                currentUser = sessionsStorage.get(sessionID);
             }
-
             response.setContentType("text/html");
             PrintWriter writer = response.getWriter();
-            List<String> contactNames = Services.getInstace().getAllNames(userName);
-            writer.println(HtmlCreator.createContactListHTML(userName, contactNames.toArray(new String[0])));
-        }
+            List<Contact> contactNames = Services.getInstace().getAllContacts(currentUser.getUsername());
+            writer.println(HtmlCreator.createContactListHTML(currentUser.getUsername(), contactNames));
+
     }
 }

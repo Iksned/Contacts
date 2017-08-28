@@ -49,35 +49,35 @@
                     <delimiterType>row</delimiterType>
                 </configuration>
                 <executions>
-                <!--
-                   <execution>
-                      <id>create-tables</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <autocommit>true</autocommit>
-                            <srcFiles>
-                                <srcFile>db/create_tables.sql</srcFile>
-                            </srcFiles>
-                        </configuration>
-                    </execution>
 
-                    <execution>
-                        <id>fill-tables</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <autocommit>true</autocommit>
-                            <srcFiles>
-                                <srcFile>db/fill_base.sql</srcFile>
-                            </srcFiles>
-                        </configuration>
-                    </execution>
-                    -->
+                      <!-- <execution>
+                          <id>create-tables</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>execute</goal>
+                            </goals>
+                            <configuration>
+                                <autocommit>true</autocommit>
+                                <srcFiles>
+                                    <srcFile>db/create_tables.sql</srcFile>
+                                </srcFiles>
+                            </configuration>
+                        </execution>
+
+                        <execution>
+                            <id>fill-tables</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>execute</goal>
+                            </goals>
+                            <configuration>
+                                <autocommit>true</autocommit>
+                                <srcFiles>
+                                    <srcFile>db/fill_base.sql</srcFile>
+                                </srcFiles>
+                            </configuration>
+                        </execution> -->
+
                     <execution>
                         <id>sql-functions</id>
                         <phase>install</phase>
@@ -167,6 +167,38 @@
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
         </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-c3p0</artifactId>
+            <version>5.2.10.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.3.6.Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate.javax.persistence</groupId>
+                    <artifactId>hibernate-jpa-2.1-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
 
     </dependencies>
 

@@ -1,14 +1,15 @@
 package servlets;
 
 import ConModel.Group;
+import ConModel.User;
 import ConModel.services.Services;
-import Utils.HtmlCreator;
-import Utils.SessionStorage;
+import utils.HtmlCreator;
+import utils.SessionStorage;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -20,26 +21,20 @@ public final class GroupList extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws IOException, ServletException {
-        String userName = null;
-        synchronized (this) {
+        User currentUser = null;
             String sessionID = null;
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("JSESSIONID")) sessionID = cookie.getValue();
                 }
-                HashMap<String, String> sessionsStorage = (HashMap<String, String>) SessionStorage.getSessions();
-                userName = sessionsStorage.get(sessionID);
+                Map<String, User> sessionsStorage = SessionStorage.getSessions();
+                currentUser = sessionsStorage.get(sessionID);
             }
 
             response.setContentType("text/html");
             PrintWriter writer = response.getWriter();
-            List<Group> groupList = Services.getInstace().getGroups(userName);
-            String[] groupNames = new String[groupList.size()];
-            for (int i = 0; i < groupList.size(); i++)
-                groupNames[i] = groupList.get(i).getName();
-
-            writer.println(HtmlCreator.createGroupListHTML(userName, groupNames));
-        }
+            List<Group> groupList = Services.getInstace().getGroups(currentUser.getUsername());
+            writer.println(HtmlCreator.createGroupListHTML(currentUser.getUsername(), groupList));
     }
 }

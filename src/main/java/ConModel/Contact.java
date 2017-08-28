@@ -1,22 +1,67 @@
 package ConModel;
 
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name="contacts")
 public class Contact implements Serializable{
+    @Id
+    @Column(name = "contactid")
+    private int id;
 
+    @Column(name = "name")
     private String name;
-    private String ph_number;
+
+    @Column(name = "phone_number")
+    private int ph_number;
+
+    @OneToOne(cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinTable(
+            name = "contactgroup",
+            joinColumns = @JoinColumn(name = "contactid",referencedColumnName = "contactid"),
+            inverseJoinColumns = @JoinColumn(name = "groupid",referencedColumnName = "groupid")
+    )
     private Group group;
 
-    Contact(){};
+    @OneToOne(cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinTable(
+            name = "userscontact",
+            joinColumns = @JoinColumn(name = "contactid",referencedColumnName = "contactid"),
+            inverseJoinColumns = @JoinColumn(name = "login",referencedColumnName = "login")
+    )
+    private User user;
 
-    public Contact(String name, String ph_number, Group group) {
+    public Contact(){};
+
+    public Contact(String name, int ph_number, Group group) {
         this.name = name;
         this.ph_number = ph_number;
         this.group = group;
+    }
+
+    public Contact(String name, int ph_number) {
+        this.name = name;
+        this.ph_number = ph_number;
+    }
+
+    public Contact(int id, String name, int ph_number, Group group, User user) {
+        this.id = id;
+        this.name = name;
+        this.ph_number = ph_number;
+        this.group = group;
+        this.user = user;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -27,11 +72,11 @@ public class Contact implements Serializable{
         this.name = name;
     }
 
-    public String getPh_number() {
+    public int getPh_number() {
         return ph_number;
     }
 
-    public void setPh_number(String ph_number) {
+    public void setPh_number(int ph_number) {
         this.ph_number = ph_number;
     }
 
@@ -43,6 +88,14 @@ public class Contact implements Serializable{
         this.group = group;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,14 +104,12 @@ public class Contact implements Serializable{
         Contact contact = (Contact) o;
 
         if (!name.equals(contact.name)) return false;
-        if (!ph_number.equals(contact.ph_number)) return false;
         return true;
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + ph_number.hashCode();
         return result;
     }
 }

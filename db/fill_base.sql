@@ -27,18 +27,18 @@ INSERT INTO Contacts (ContactID,Name,Phone_Number)
 VALUES ('7','ConName7','1235512');
 
 
-INSERT INTO Groups (Name)
-VALUES ('Group1');
-INSERT INTO Groups (Name)
-VALUES ('Group2');
-INSERT INTO Groups (Name)
-VALUES ('Group3');
-INSERT INTO Groups (Name)
-VALUES ('Group4');
-INSERT INTO Groups (Name)
-VALUES ('Group5');
-INSERT INTO Groups (Name)
-VALUES ('Group6');
+INSERT INTO Groups (GroupId,Name)
+VALUES ('1','Group1');
+INSERT INTO Groups (GroupId,Name)
+VALUES ('2','Group2');
+INSERT INTO Groups (GroupId,Name)
+VALUES ('3','Group3');
+INSERT INTO Groups (GroupId,Name)
+VALUES ('4','Group4');
+INSERT INTO Groups (GroupId,Name)
+VALUES ('5','Group5');
+INSERT INTO Groups (GroupId,Name)
+VALUES ('6','Group6');
 
 INSERT INTO UsersContact (Login,ContactID)
 VALUES ('User1','1');
@@ -53,31 +53,31 @@ VALUES ('User4','4');
 INSERT INTO UsersContact (Login,ContactID)
 VALUES ('User5','6');
 
-INSERT INTO UsersGroup (Login,GroupName)
-VALUES ('User1','Group1');
-INSERT INTO UsersGroup (Login,GroupName)
-VALUES ('User2','Group2');
-INSERT INTO UsersGroup (Login,GroupName)
-VALUES ('User2','Group3');
-INSERT INTO UsersGroup (Login,GroupName)
-VALUES ('User3','Group4');
-INSERT INTO UsersGroup (Login,GroupName)
-VALUES ('User4','Group5');
-INSERT INTO UsersGroup (Login,GroupName)
-VALUES ('User5','Group6');
+INSERT INTO UsersGroup (Login,GroupId)
+VALUES ('User1','1');
+INSERT INTO UsersGroup (Login,GroupId)
+VALUES ('User2','2');
+INSERT INTO UsersGroup (Login,GroupId)
+VALUES ('User2','3');
+INSERT INTO UsersGroup (Login,GroupId)
+VALUES ('User3','4');
+INSERT INTO UsersGroup (Login,GroupId)
+VALUES ('User4','5');
+INSERT INTO UsersGroup (Login,GroupId)
+VALUES ('User5','6');
 
-INSERT INTO ContactGroup(ContactID,GroupName)
-VALUES ('1','Group6');
-INSERT INTO ContactGroup(ContactID,GroupName)
-VALUES ('2','Group5');
-INSERT INTO ContactGroup(ContactID,GroupName)
-VALUES ('3','Group2');
-INSERT INTO ContactGroup(ContactID,GroupName)
-VALUES ('4','Group3');
-INSERT INTO ContactGroup(ContactID,GroupName)
-VALUES ('5','Group2');
-INSERT INTO ContactGroup(ContactID,GroupName)
-VALUES ('6','Group1');
+INSERT INTO ContactGroup(ContactID,GroupId)
+VALUES ('1','1');
+INSERT INTO ContactGroup(ContactID,GroupId)
+VALUES ('2','2');
+INSERT INTO ContactGroup(ContactID,GroupId)
+VALUES ('3','3');
+INSERT INTO ContactGroup(ContactID,GroupId)
+VALUES ('4','5');
+INSERT INTO ContactGroup(ContactID,GroupId)
+VALUES ('5','4');
+INSERT INTO ContactGroup(ContactID,GroupId)
+VALUES ('6','6');
 
 
 

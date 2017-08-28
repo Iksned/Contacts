@@ -9,7 +9,8 @@ CREATE TABLE Contacts (
     Phone_Number int NOT NULL
 );
 CREATE TABLE Groups (
-     Name varchar(255) PRIMARY KEY
+     GroupId int PRIMARY KEY,
+     Name varchar(255)
 );
 
 CREATE TABLE UsersContact (
@@ -22,19 +23,19 @@ CREATE TABLE UsersContact (
 
 CREATE TABLE UsersGroup (
     Login varchar(255),
-    GroupName varchar(255),
+    GroupID int,
     FOREIGN KEY (Login) REFERENCES Users(Login),
-    FOREIGN KEY (GroupName) REFERENCES Groups(Name)
+    FOREIGN KEY (GroupID) REFERENCES Groups(GroupId)
                             ON DELETE CASCADE
                             ON UPDATE CASCADE
 );
 
 CREATE TABLE ContactGroup (
     ContactID int,
-    GroupName varchar(255),
+    GroupID int,
     FOREIGN KEY (ContactID) REFERENCES Contacts(ContactID)
                             ON DELETE CASCADE,
-    FOREIGN KEY (GroupName) REFERENCES Groups(Name)
+    FOREIGN KEY (GroupID) REFERENCES Groups(GroupId)
                             ON DELETE CASCADE
                             ON UPDATE CASCADE
 );
@@ -52,7 +53,7 @@ CREATE INDEX Users_ContactIn
 ON UsersContact (Login,ContactID);
 
 CREATE INDEX Users_GroupIn
-ON UsersGroup (Login,GroupName);
+ON UsersGroup (Login,GroupID);
 
 CREATE INDEX Contact_GroupIn
-ON ContactGroup (ContactID,GroupName);
+ON ContactGroup (ContactID,GroupID);
