@@ -1,14 +1,16 @@
 package DAO.hibernate;
 
 import ConModel.User;
-import DAO.BaseUserDAO;
+import DAO.Constants;
+import DAO.UserDAO;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import java.util.List;
 
-public class HibernateUserDAO implements BaseUserDAO{
-
+public class HibernateUserDAO implements UserDAO {
+    private static final Logger log = Logger.getLogger(HibernateContactDAO.class);
     private static volatile HibernateUserDAO instace;
 
     private HibernateUserDAO() {
@@ -28,11 +30,11 @@ public class HibernateUserDAO implements BaseUserDAO{
     }
 
     @Override
-    public User read(String input) {
+    public User read(String loginid) {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            return session.get(User.class, input);
+            return session.get(User.class, loginid);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Can't get user: "+loginid+" from DB",e);
             return null;
         }
     }
@@ -40,11 +42,11 @@ public class HibernateUserDAO implements BaseUserDAO{
     @Override
     public List<User> readAll(String ob) {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString = "Select u from User u";
+            String queryString = Constants.allUserList;
             Query query = session.createQuery(queryString);
             return query.getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Can't get user list",e);
             return null;
         }
     }

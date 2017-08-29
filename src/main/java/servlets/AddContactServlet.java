@@ -4,8 +4,6 @@ import ConModel.Contact;
 import ConModel.Group;
 import ConModel.User;
 import ConModel.services.Services;
-import DAO.hibernate.AnalyticalDAO;
-import org.apache.log4j.Logger;
 import utils.HtmlCreator;
 import utils.SessionStorage;
 
@@ -20,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public final class AddContactServlet extends HttpServlet {
+
     public void doGet(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {

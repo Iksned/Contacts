@@ -28,11 +28,10 @@
     <!-- Drop and re-create the database schema on startup -->
     <property name="hbm2ddl.auto">update</property>
 
-    <!-- Mapping files -->
+    <!-- Mapping classes -->
     <mapping class="ConModel.User"/>
     <mapping class="ConModel.Group"/>
     <mapping class="ConModel.Contact"/>
-    <!--<mapping resource="user.hbm.xml" />-->
 
 </session-factory>
 </hibernate-configuration>

@@ -4,6 +4,7 @@ import ConModel.Contact;
 import ConModel.Group;
 import ConModel.User;
 import ConModel.services.ResultTable;
+import DAO.Constants;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -35,26 +36,24 @@ public class AnalyticalDAO {
             return (checkedUser.getPassword().equals(password));
         } catch (Exception e) {
             log.error("Check user error ",e);
-            e.printStackTrace();
             return false;
         }
     }
 
     public long countUsers()  {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString = "Select count(u) from User u";
+            String queryString = Constants.CountallUserList;
             Query query = session.createQuery(queryString);
             return (Long) query.uniqueResult();
         } catch (Exception e) {
             log.error("Count users error ",e);
-            e.printStackTrace();
             return 0;
         }
     }
 
     public List<ResultTable> countUsersContacts()  {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString = "Select u from User u";
+            String queryString = Constants.allUserList;
             Query query = session.createQuery(queryString);
             List<User> userList = query.getResultList();
             List<ResultTable> result = new ArrayList<>();
@@ -70,7 +69,7 @@ public class AnalyticalDAO {
 
     public List<ResultTable> countUsersGroups()  {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString = "Select u from User u";
+            String queryString = Constants.allUserList;
             Query query = session.createQuery(queryString);
             List<User> userList = query.getResultList();
             List<ResultTable> result = new ArrayList<>();
@@ -86,10 +85,10 @@ public class AnalyticalDAO {
 
     public int avgContactsInGroups()  {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString = "Select c from Contact c";
+            String queryString = Constants.allContactList;
             Query contactQuery = session.createQuery(queryString);
             List<Contact> contactList = contactQuery.getResultList();
-            String queryString2 = "Select g from Group g";
+            String queryString2 = Constants.allGroupList;
             Query groupQuery = session.createQuery(queryString2);
             List<Group> groupList = groupQuery.getResultList();
             return contactList.size() / groupList.size();
@@ -101,10 +100,10 @@ public class AnalyticalDAO {
 
     public int avgUsersContacts()  {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString = "Select c from Contact c";
+            String queryString = Constants.allContactList;
             Query contactQuery = session.createQuery(queryString);
             List<Contact> contactList = contactQuery.getResultList();
-            String queryString2 = "Select u from User u";
+            String queryString2 = Constants.allUserList;
             Query userQuery = session.createQuery(queryString2);
             List<User> userList = userQuery.getResultList();
             return contactList.size() / userList.size();
@@ -116,7 +115,7 @@ public class AnalyticalDAO {
 
     public List<String> inactiveUsers()  {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString2 = "Select u from User u";
+            String queryString2 = Constants.allUserList;
             Query userQuery = session.createQuery(queryString2);
             List<User> userList = userQuery.getResultList();
             List<String> result = new ArrayList<>();

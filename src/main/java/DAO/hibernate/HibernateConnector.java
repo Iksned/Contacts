@@ -21,10 +21,12 @@ public class HibernateConnector {
         }
     }
 
-    public static synchronized HibernateConnector getInstance() throws HibernateException {
-        if (instance == null) {
-            instance = new HibernateConnector();
-        }
+    public static HibernateConnector getInstance() throws HibernateException {
+        if (instance == null)
+            synchronized (HibernateConnector.class) {
+                if (instance == null)
+                    instance = new HibernateConnector();
+            }
         return instance;
     }
 

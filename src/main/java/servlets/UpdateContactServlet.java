@@ -4,6 +4,7 @@ import ConModel.Contact;
 import ConModel.Group;
 import ConModel.User;
 import ConModel.services.Services;
+import org.apache.log4j.Logger;
 import utils.HtmlCreator;
 import utils.SessionStorage;
 
@@ -19,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public final class UpdateContactServlet extends HttpServlet {
 
-    Contact updatedContact;
+    private Contact updatedContact;
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)

@@ -1,6 +1,11 @@
 package ConModel;
 
+import org.hibernate.annotations.*;
+
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,7 +19,7 @@ public class Group implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST,})
     @JoinTable(
             name = "usersgroup",
             joinColumns = @JoinColumn(name = "groupid",referencedColumnName = "groupid"),
@@ -22,7 +27,7 @@ public class Group implements Serializable {
     )
     private User user;
 
-    @OneToMany(cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+    @OneToMany(cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST,})
     @JoinTable(
             name = "contactgroup",
             joinColumns = @JoinColumn(name = "groupid",referencedColumnName = "groupid"),

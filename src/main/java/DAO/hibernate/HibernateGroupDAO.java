@@ -1,6 +1,7 @@
 package DAO.hibernate;
 
 import ConModel.Group;
+import DAO.Constants;
 import DAO.GroupDAO;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -26,15 +27,14 @@ public class HibernateGroupDAO implements GroupDAO {
 
     @Override
     public void create(Group group) {
-        Transaction transaction = null;
         try (Session session = HibernateConnector.getInstance().getSession()) {
+            Transaction transaction = null;
             transaction = session.beginTransaction();
             session.save(group);
             session.flush();
             transaction.commit();
         } catch (RuntimeException e) {
             log.error("Can't add group", e);
-            e.printStackTrace();
         }
     }
 
@@ -44,7 +44,6 @@ public class HibernateGroupDAO implements GroupDAO {
             return session.get(Group.class, Integer.parseInt(id));
         } catch (Exception e) {
             log.error("Can't get group", e);
-            e.printStackTrace();
             return null;
         }
     }
@@ -52,40 +51,38 @@ public class HibernateGroupDAO implements GroupDAO {
     @Override
     public List<Group> readAll(String user) {
         try (Session session = HibernateConnector.getInstance().getSession()) {
-            String queryString = "Select g from Group g where g.user = '" + user + "'";
+            String queryString = String.format(Constants.groupList, user);
             Query query = session.createQuery(queryString);
             return query.getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Cat't get group list of user "+ user,e);
             return null;
         }
     }
 
     @Override
     public void update(Group newGroup) {
-        Transaction transaction = null;
         try (Session session = HibernateConnector.getInstance().getSession()) {
+            Transaction transaction = null;
             transaction = session.beginTransaction();
             session.saveOrUpdate(newGroup);
             session.flush();
             transaction.commit();
         } catch (Exception e) {
             log.error("Can't update group", e);
-            e.printStackTrace();
         }
     }
 
     @Override
     public void delete(Group group) {
-        Transaction transaction = null;
         try (Session session = HibernateConnector.getInstance().getSession()) {
+            Transaction transaction = null;
             transaction = session.beginTransaction();
             session.delete(group);
             session.flush();
             transaction.commit();
         } catch (Exception e) {
             log.error("Can't delete group", e);
-            e.printStackTrace();
         }
     }
 }
