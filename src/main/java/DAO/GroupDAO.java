@@ -1,7 +1,6 @@
 package DAO;
 
-import ConModel.Contact;
-import ConModel.Group;
+import model.Group;
 
 import java.util.List;
 

@@ -1,8 +1,9 @@
 package servlets;
 
-import ConModel.Group;
-import ConModel.services.Services;
+import model.Group;
+import services.GroupService;
 import utils.HtmlCreator;
+import utils.SpringUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,21 +18,22 @@ public final class UpdateGroupServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws IOException, ServletException {
-
+            GroupService groupService = (GroupService) SpringUtils.getBean("groupService");
             response.setContentType("text/html");
             PrintWriter writer = response.getWriter();
             int id = Integer.parseInt(request.getParameter("id"));
-            updatedGroup = Services.getInstace().getGroupById(id);
+            updatedGroup = groupService.getGroupById(id);
             writer.println(HtmlCreator.createUpdateGroupHTML(updatedGroup));
     }
 
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
+            GroupService groupService = (GroupService) SpringUtils.getBean("groupService");
             response.setContentType("text/html");
             String newName = request.getParameter("newname");
             updatedGroup.setName(newName);
-            Services.getInstace().updateGroup(updatedGroup);
+            groupService.updateGroup(updatedGroup);
             response.sendRedirect(request.getContextPath() + "/grouplist");
     }
 }

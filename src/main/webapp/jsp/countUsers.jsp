@@ -15,8 +15,8 @@
 <center>
 <h1>
 There is
-<%@ page import="ConModel.services.Services" %>
-<p>(<%=Services.getInstace().countUsers()%>)</p>
+<%@ page import="utils.SpringUtils,services.*" %>
+<p>(<%=((AnalyticalService)SpringUtils.getBean("analyticalService")).countUsers()%>)</p>
   Users
 </h1>
 <form>

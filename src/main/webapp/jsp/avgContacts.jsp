@@ -15,8 +15,8 @@
 <center>
 <h1>
 Average number of user contacts is
-<%@ page import="ConModel.services.Services" %>
-<p>(<%=Services.getInstace().avgUserContacts()%>)</p>
+<%@ page import="utils.SpringUtils,services.*" %>
+<p>(<%=((AnalyticalService)SpringUtils.getBean("analyticalService")).avgUserContacts()%>)</p>
 </h1>
 <form>
   <input type="button" value="Go back!" onclick="history.back()">

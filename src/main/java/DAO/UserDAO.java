@@ -1,6 +1,6 @@
 package DAO;
 
-import ConModel.User;
+import model.User;
 
 import java.util.List;
 

@@ -35,14 +35,15 @@ public class LogLevelFilterFileAppender extends FileAppender {
     }
 
     @Override
-    public void activateOptions() {
+    public synchronized void activateOptions() {
         MDC.put(ORIG_LOG_FILE_NAME, fileName);
         super.activateOptions();
     }
 
     @Override
-    public void append(LoggingEvent event) {
+    public synchronized void append(LoggingEvent event) {
         try {
+            if ((String) MDC.get(ORIG_LOG_FILE_NAME) != null)
             setFile(appendLevelToFileName((String) MDC.get(ORIG_LOG_FILE_NAME),
                     event.getLevel().toString()), fileAppend, bufferedIO,
                     bufferSize);
@@ -56,7 +57,7 @@ public class LogLevelFilterFileAppender extends FileAppender {
         super.append(event);
     }
 
-    private String appendLevelToFileName(String oldLogFileName, String level) {
+    private synchronized String appendLevelToFileName(String oldLogFileName, String level) {
         if (oldLogFileName != null) {
             final File logFile = new File(oldLogFileName);
             String newFileName = "";

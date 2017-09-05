@@ -1,0 +1,93 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:webmvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.3.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+
+    <webmvc:annotation-driven/>
+    <context:component-scan base-package="REST.**" />
+
+    <!--Services-->
+    <bean id="contactService" name="contactService" class="services.ContactService" scope="singleton">
+        <property name="contactDAO" ref="contactDAO"/>
+    </bean>
+    <bean id="groupService" name="groupService" class="services.GroupService" scope="singleton">
+        <property name="groupDAO" ref="groupDAO"/>
+    </bean>
+    <bean id="userService" name="userService" class="services.UserService" scope="singleton">
+        <property name="userDAO" ref="userDAO"/>
+    </bean>
+    <bean id="analyticalService" name="analyticalService" class="services.AnalyticalService" scope="singleton">
+        <property name="analyticalDAO" ref="analyticalDAO"/>
+    </bean>
+
+    <!--DAO-->
+    <bean id="groupDAO" class="DAO.hibernate.HibernateGroupDAO" scope="singleton">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="contactDAO" class="DAO.hibernate.HibernateContactDAO" scope="singleton">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="userDAO" class="DAO.hibernate.HibernateUserDAO" scope="singleton">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="analyticalDAO" class="DAO.hibernate.AnalyticalDAO" scope="singleton">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--DataSource-->
+    <bean id="myDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="org.postgresql.Driver"/>
+    <property name="url" value="jdbc:postgresql://localhost:5432:postgres"/>
+    <property name="username" value="postgres"/>
+    <property name="password" value="postgres"/>
+    </bean>
+
+    <!--Hibernate-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="myDataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <value>model.User</value>
+                <value>model.Contact</value>
+                <value>model.Group</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL92Dialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--Transaction Manager-->
+    <bean id="txManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+          <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:pointcut id="serviceOperation" expression="execution(* services..*Service.*(..))"/>
+        <aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice"/>
+    </aop:config>
+
+
+</beans>

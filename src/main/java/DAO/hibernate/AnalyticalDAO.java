@@ -1,49 +1,47 @@
 package DAO.hibernate;
 
-import ConModel.Contact;
-import ConModel.Group;
-import ConModel.User;
-import ConModel.services.ResultTable;
+import model.Contact;
+import model.Group;
+import model.User;
+import org.hibernate.SessionFactory;
+import services.ResultTable;
 import DAO.Constants;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AnalyticalDAO {
-    private static volatile AnalyticalDAO instace;
     private static final Logger log = Logger.getLogger(AnalyticalDAO.class);
+    SessionFactory sessionFactory;
 
-    public static AnalyticalDAO getInstace() {
-        if (instace == null)
-            synchronized (AnalyticalDAO.class) {
-                if (instace == null)
-                    instace = new AnalyticalDAO();
-            }
-        return instace;
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
-    private AnalyticalDAO() {
+    private Session session() {
+        return sessionFactory.getCurrentSession();
     }
 
-    public boolean chekUser(String username, String password){
+ /*   public boolean chekUser(String username, String password){
         log.info("Start checking user");
         log.debug("Attempted username and password "+username + " " + password);
-        try (Session session = HibernateConnector.getInstance().getSession()) {
-            User checkedUser =  session.get(User.class, username);
+        try (Session session = HibernateConnector.getInstance().getSession()){
+            User checkedUser =   session.get(User.class, username);
             return (checkedUser.getPassword().equals(password));
         } catch (Exception e) {
             log.error("Check user error ",e);
             return false;
         }
-    }
+    } */
 
     public long countUsers()  {
-        try (Session session = HibernateConnector.getInstance().getSession()) {
+        try {
             String queryString = Constants.CountallUserList;
-            Query query = session.createQuery(queryString);
+            Query query =  session().createQuery(queryString);
             return (Long) query.uniqueResult();
         } catch (Exception e) {
             log.error("Count users error ",e);
@@ -52,9 +50,9 @@ public class AnalyticalDAO {
     }
 
     public List<ResultTable> countUsersContacts()  {
-        try (Session session = HibernateConnector.getInstance().getSession()) {
+        try {
             String queryString = Constants.allUserList;
-            Query query = session.createQuery(queryString);
+            Query query =  session().createQuery(queryString);
             List<User> userList = query.getResultList();
             List<ResultTable> result = new ArrayList<>();
             for (User user : userList) {
@@ -68,9 +66,9 @@ public class AnalyticalDAO {
     }
 
     public List<ResultTable> countUsersGroups()  {
-        try (Session session = HibernateConnector.getInstance().getSession()) {
+        try {
             String queryString = Constants.allUserList;
-            Query query = session.createQuery(queryString);
+            Query query =  session().createQuery(queryString);
             List<User> userList = query.getResultList();
             List<ResultTable> result = new ArrayList<>();
             for (User user : userList) {
@@ -84,12 +82,12 @@ public class AnalyticalDAO {
     }
 
     public int avgContactsInGroups()  {
-        try (Session session = HibernateConnector.getInstance().getSession()) {
+        try {
             String queryString = Constants.allContactList;
-            Query contactQuery = session.createQuery(queryString);
+            Query contactQuery =  session().createQuery(queryString);
             List<Contact> contactList = contactQuery.getResultList();
             String queryString2 = Constants.allGroupList;
-            Query groupQuery = session.createQuery(queryString2);
+            Query groupQuery =  session().createQuery(queryString2);
             List<Group> groupList = groupQuery.getResultList();
             return contactList.size() / groupList.size();
         } catch (Exception e) {
@@ -99,12 +97,12 @@ public class AnalyticalDAO {
     }
 
     public int avgUsersContacts()  {
-        try (Session session = HibernateConnector.getInstance().getSession()) {
+        try {
             String queryString = Constants.allContactList;
-            Query contactQuery = session.createQuery(queryString);
+            Query contactQuery =  session().createQuery(queryString);
             List<Contact> contactList = contactQuery.getResultList();
             String queryString2 = Constants.allUserList;
-            Query userQuery = session.createQuery(queryString2);
+            Query userQuery =  session().createQuery(queryString2);
             List<User> userList = userQuery.getResultList();
             return contactList.size() / userList.size();
         } catch (Exception e) {
@@ -114,9 +112,9 @@ public class AnalyticalDAO {
     }
 
     public List<String> inactiveUsers()  {
-        try (Session session = HibernateConnector.getInstance().getSession()) {
+        try {
             String queryString2 = Constants.allUserList;
-            Query userQuery = session.createQuery(queryString2);
+            Query userQuery =  session().createQuery(queryString2);
             List<User> userList = userQuery.getResultList();
             List<String> result = new ArrayList<>();
             for (User user : userList) {

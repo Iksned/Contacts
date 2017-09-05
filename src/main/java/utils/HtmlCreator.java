@@ -1,7 +1,7 @@
 package utils;
 
-import ConModel.Contact;
-import ConModel.Group;
+import model.Contact;
+import model.Group;
 
 import java.io.IOException;
 import java.util.List;

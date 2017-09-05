@@ -1,10 +1,10 @@
 package servlets;
 
-import ConModel.Group;
-import ConModel.services.Services;
+import model.Group;
+import services.GroupService;
+import utils.SpringUtils;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,10 +15,11 @@ public final class DeleteGroupServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
+            GroupService services = (GroupService) SpringUtils.getBean("groupService");
             response.setContentType("text/html");
             String groupid = request.getParameter("id");
-            Group group = Services.getInstace().getGroupById(Integer.parseInt(groupid));
-            Services.getInstace().delGroup(group);
+            Group group = services.getGroupById(Integer.parseInt(groupid));
+            services.delGroup(group);
             response.sendRedirect(request.getContextPath() + "/grouplist");
     }
 }

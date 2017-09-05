@@ -29,9 +29,9 @@
     <property name="hbm2ddl.auto">update</property>
 
     <!-- Mapping classes -->
-    <mapping class="ConModel.User"/>
-    <mapping class="ConModel.Group"/>
-    <mapping class="ConModel.Contact"/>
+    <mapping class="model.User"/>
+    <mapping class="model.Group"/>
+    <mapping class="model.Contact"/>
 
 </session-factory>
 </hibernate-configuration>

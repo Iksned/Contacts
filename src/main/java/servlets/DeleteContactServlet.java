@@ -1,14 +1,12 @@
 package servlets;
 
-import ConModel.Contact;
-import ConModel.Group;
-import ConModel.services.Services;
+import model.Contact;
+import services.ContactService;
+import utils.SpringUtils;
+
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Enumeration;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,10 +16,11 @@ public final class DeleteContactServlet extends HttpServlet {
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
+            ContactService contactService = (ContactService) SpringUtils.getBean("contactService");
             response.setContentType("text/html");
             String contactId = request.getParameter("id");
-            Contact contact = Services.getInstace().getContactById(Integer.parseInt(contactId));
-            Services.getInstace().delContact(contact);
+            Contact contact =contactService.getContactById(Integer.parseInt(contactId));
+            contactService.delContact(contact);
             response.sendRedirect(request.getContextPath() + "/contactlist");
     }
 }

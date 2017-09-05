@@ -15,8 +15,8 @@
 <center>
 <h1>
 
-<%@ page import="ConModel.services.Services,ConModel.services.ResultTable,java.util.List" %>
-<%List<ResultTable> usersContacts = Services.getInstace().countUserGroups();%>
+<%@ page import="java.util.List,utils.SpringUtils,services.*" %>
+<%List<ResultTable> usersContacts = ((AnalyticalService)SpringUtils.getBean("analyticalService")).countUserGroups();%>
 <table>
 <tableborder="1" width="30%" cellpadding="3">
  <thead>
