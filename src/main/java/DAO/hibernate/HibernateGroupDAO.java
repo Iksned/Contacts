@@ -42,8 +42,6 @@ public class HibernateGroupDAO implements GroupDAO {
         try {
             Group group = session().get(Group.class, Integer.parseInt(id));
             User user = group.getUser();
-            List<Group> groupList = user.getGrouplist();
-            List<Contact> contactList = user.getContactList();
             return group;
         } catch (Exception e) {
             log.error("Can't get group", e);

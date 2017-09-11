@@ -25,7 +25,6 @@ public class GroupService {
     }
 
     public synchronized void addGroup(Group newGroup) {
-        System.out.println("WHATTHE");
         groupDAO.create(newGroup);
     }
 

@@ -2,6 +2,7 @@ package utils;
 
 import model.Contact;
 import model.Group;
+import model.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -114,7 +115,7 @@ public class HtmlCreator {
                 "            <tbody>" +
                 "            <tr><td>Name</td>" +
                 "            <td>Phone Number</td>" +
-                "            <td>Group</td></tr>       ";
+                "            <td>Group List</td></tr>       ";
 
         for (int i = 0;i<contacts.size();i++)
         {
@@ -122,10 +123,15 @@ public class HtmlCreator {
             int id = contact.getId();
             String name = contact.getName();
             String phnumber = "" + contact.getPh_number();
-            String groupName = contact.getGroup().getName();
+            List<Group> groupList = contact.getGroup();
             html = html +  "<tr><td>"+ name+ "</td>";
             html = html + "<td>"+phnumber+"</td>";
-            html = html + "<td>"+groupName+"</td>";
+            html = html + "<td>"+ "<details>" +
+                    "<summary>|</summary>";
+            for (int j = 0;j<contact.getGroup().size();j++){
+                html = html + "<p>"+ contact.getGroup().get(j).getName() +" </p>";
+            }
+            html = html + " </details>" +"</td>";
             html = html + "<td> <form method=\"get\" action=\"updateservlet\"> <input type=\"submit\" value=\"Update\"/>" +
                     "<input type=\"hidden\"\n" +
                     "            name=\"id\"\n" +
@@ -136,9 +142,7 @@ public class HtmlCreator {
                     " <input type=\"hidden\"\n" +
                     "            name=\"phnum\"\n" +
                     "            value="+phnumber+">" +
-                    " <input type=\"hidden\"\n" +
-                    "            name=\"groupname\"\n" +
-                    "            value="+groupName+"></form></td>";
+                    "</form></td>";
             html = html + "<td> <form method=\"post\" action=\"deleteservlet\"> <input type=\"submit\" value=\"Delete\"/>" +
                     "<input type=\"hidden\"\n" +
                     "            name=\"id\"\n" +
@@ -149,16 +153,14 @@ public class HtmlCreator {
                     " <input type=\"hidden\"\n" +
                     "            name=\"phnum\"\n" +
                     "            value="+phnumber+">" +
-                    " <input type=\"hidden\"\n" +
-                    "            name=\"groupname\"\n" +
-                    "            value="+groupName+"></form></td></tr>";
-
+                    "</form></td></tr>";
         }
         html = html+
                 "            </tbody>\n" +
                 "        </table>\n" +
                 "<form method=\"get\" action=\"addservlet\"> <input type=\"submit\" value=\"Add Contact\"/></form> " +
                 " <form method=\"get\" action=\"grouplist\"> <input type=\"submit\" value=\"Show Groups\"/></form>  " +
+                " <form method=\"get\" action=\"logout\"> <input type=\"submit\" value=\"Logout\"/></form>  " +
                 "</center>\n" +
                 "</body>\n" +
                 "</html>";
@@ -191,12 +193,15 @@ public class HtmlCreator {
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td>Group</td>\n" +
-                "                <td><select name=\"groupname\" datatype=\"text\">\n";
-                  for (Group group : groupList) {
-                      html = html + "<option value=" + group.getId() + ">" + group.getName() + "</option>";
-                  }
-               html = html +
-                "                </select> </td>\n" +
+                "                <td>";
+                for (int i = 0;i<groupList.size();i++) {
+                    html = html +"<select name=\"groupname"+i+"\" datatype=\"text\">\n";
+                    for (Group group : groupList) {
+                        html = html + "<option value=" + group.getId() + ">" + group.getName() + "</option>";
+                    }
+                    html = html +"</select>";
+                }
+                html = html +"              </td>"+
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td><input type=\"submit\" value=\"Add\" /></td>\n" +
@@ -238,12 +243,15 @@ public class HtmlCreator {
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td>Group</td>\n" +
-                "                <td><select name=\"groupid\" datatype=\"text\">\n";
-        for (Group group : groupList) {
-            html = html + "<option value=" + group.getId() + ">" + group.getName() + "</option>";
-        }
-        html = html +
-                "                </select> </td>\n" +
+                "                <td>";
+                 for (int i = 0;i<groupList.size();i++) {
+                    html = html +"<select name=\"groupname"+i+"\" datatype=\"text\">\n";
+                    for (Group group : groupList) {
+                        html = html + "<option value=" + group.getId() + ">" + group.getName() + "</option>";
+                    }
+                    html = html +"</select>";
+                }
+                html = html +"              </td>"+
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td><input type=\"submit\" value=\"Update\" /></td>\n" +
@@ -305,7 +313,13 @@ public class HtmlCreator {
         {
             String name = groupNames.get(i).getName();
             int id = groupNames.get(i).getId();
-            html = html +  "<tr><td>"+ name+ "</td>";
+            html = html +  "<tr><td>"+ name+ "<details>" +
+            "<summary>|</summary>";
+            for (int j = 0;j<groupNames.get(i).getContactList().size();j++){
+                html = html + "<p>"+ groupNames.get(i).getContactList().get(j).getName() +" "+ groupNames.get(i).getContactList().get(j).getPh_number()+" </p>";
+            }
+            html = html + " </details>" +
+                    "</td>";
             html = html + "<td> <form method=\"get\" action=\"updategroupservlet\"> <input type=\"submit\" value=\"Update\"/>" +
                     "            <input type=\"hidden\"" +
                     "            name=\"id\"\n" +
@@ -328,6 +342,7 @@ public class HtmlCreator {
                 "        </table>\n" +
                 "<form method=\"get\" action=\"addgroupservlet\"> <input type=\"submit\" value=\"Add Group\"/></form> " +
                 " <form method=\"get\" action=\"contactlist\"> <input type=\"submit\" value=\"Show Contacts\"/></form>  " +
+                " <form method=\"get\" action=\"logout\"> <input type=\"submit\" value=\"Logout\"/></form>  " +
                 "</center>\n" +
                 "</body>\n" +
                 "</html>";

@@ -1,6 +1,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:security="http://www.springframework.org/schema/security"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:webmvc="http://www.springframework.org/schema/mvc"
@@ -13,7 +14,9 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-4.3.xsd
        http://www.springframework.org/schema/mvc
-       http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+       http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+       http://www.springframework.org/schema/security
+	   http://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
     <webmvc:annotation-driven/>
     <context:component-scan base-package="REST.**" />
@@ -88,6 +91,5 @@
         <aop:pointcut id="serviceOperation" expression="execution(* services..*Service.*(..))"/>
         <aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice"/>
     </aop:config>
-
 
 </beans>

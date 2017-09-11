@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonSerialize
 @Entity
@@ -21,13 +23,13 @@ public class Contact implements Serializable{
     private int ph_number;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
     @JoinTable(
             name = "contactgroup",
             joinColumns = @JoinColumn(name = "contactid",referencedColumnName = "contactid"),
             inverseJoinColumns = @JoinColumn(name = "groupid",referencedColumnName = "groupid")
     )
-    private Group group;
+    private List<Group> group;
 
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
@@ -40,7 +42,15 @@ public class Contact implements Serializable{
 
     public Contact(){};
 
-    public Contact(String name, int ph_number, Group group) {
+    public void addGroup(Group group1) {
+        group.add(group1);
+    }
+
+    public void removeGroup(Group group1) {
+        group.remove(group1);
+    }
+
+    public Contact(String name, int ph_number, List<Group> group) {
         this.name = name;
         this.ph_number = ph_number;
         this.group = group;
@@ -51,7 +61,7 @@ public class Contact implements Serializable{
         this.ph_number = ph_number;
     }
 
-    public Contact(int id, String name, int ph_number, Group group, User user) {
+    public Contact(int id, String name, int ph_number, List<Group> group, User user) {
         this.id = id;
         this.name = name;
         this.ph_number = ph_number;
@@ -83,11 +93,11 @@ public class Contact implements Serializable{
         this.ph_number = ph_number;
     }
 
-    public Group getGroup() {
+    public List<Group> getGroup() {
         return group;
     }
 
-    public void setGroup(Group group) {
+    public void setGroup(List<Group> group) {
         this.group = group;
     }
 

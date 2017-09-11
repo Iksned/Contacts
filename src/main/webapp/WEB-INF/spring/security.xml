@@ -6,24 +6,25 @@
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
-<http auto-config="true" use-expressions="true" >
-    <intercept-url pattern="/login.html" access="permitAll"/>
-    <intercept-url pattern="/rest/**" access="permitAll"/>
-    <intercept-url pattern="/**" access= "hasRole('ROLE_USER')"/>
-    <csrf disabled="true"/>
-</http>
+    <beans:import resource="classpath*:applicationContext.xml"/>
 
-<authentication-manager>
-    <authentication-provider>
-        <user-service>
-            <user name="User2" password="Password2" authorities="ROLE_USER" />
-            <user name="User3" password="Password3" authorities="ROLE_USER" />
-            <user name="User4" password="Password4" authorities="ROLE_USER" />
-            <user name="User5" password="Password5" authorities="ROLE_USER" />
-            <user name="User6" password="Password6" authorities="ROLE_USER" />
-        </user-service>
-    </authentication-provider>
-</authentication-manager>
+    <beans:bean id="myUserDetailService" class="services.MyUserDetailService">
+        <beans:property name="userDAO" ref="userDAO"/>
+    </beans:bean>
+
+    <http auto-config="true" use-expressions="true" >
+        <intercept-url pattern="/login.html" access="permitAll"/>
+        <intercept-url pattern="/rest/**" access="permitAll"/>
+        <intercept-url pattern="/jsp/**" access="permitAll"/>
+        <intercept-url pattern="/**" access= "hasRole('ROLE_USER')"/>
+        <csrf disabled="true"/>
+    </http>
+
+    <authentication-manager>
+        <authentication-provider
+                user-service-ref="myUserDetailService" >
+        </authentication-provider>
+    </authentication-manager>
 
 </beans:beans>
 

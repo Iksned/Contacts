@@ -15,6 +15,7 @@ import services.GroupService;
 import services.UserService;
 import utils.SpringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,26 +30,25 @@ public class ContactController {
     @Autowired
     AnalyticalService analyticalService;
 
+    private RequestResult requestFactory(Object ob) {
+        if (ob == null)
+            return new RequestResult("FAIL",
+                    null);
+        else
+            return new RequestResult("SUCCESS",
+                    ob);
+    }
+
     @RequestMapping("/getcontact")
     public RequestResult getContact(@RequestParam(value="id", required=false) int contactid) {
         Contact contact = contactService.getContactById(contactid);
-        if (contact == null)
-            return new RequestResult("FAIL",
-                    new Contact());
-            else
-            return new RequestResult("SUCSESS",
-               contact);
+        return requestFactory(contact);
     }
 
     @RequestMapping("/getallcontacts")
     public RequestResult getAllContacts(@RequestParam(value="username", required=false, defaultValue="User3") String username) {
         List<Contact> contactList = contactService.getAllContacts(username);
-        if (contactList == null)
-            return new RequestResult("FAIL",
-                    new Contact());
-        else
-            return new RequestResult("SUCSESS",
-                    contactList);
+        return requestFactory(contactList);
     }
 
     @RequestMapping("/addcontact")
@@ -58,16 +58,11 @@ public class ContactController {
                                     @RequestParam(value="groupid", required=true) int groupid) {
         Group group = groupService.getGroupById(groupid);
         User user = userService.getUserById(username);
-        Contact contact = new Contact(name,ph_num,group);
+        List<Group> groupList = new ArrayList<>();
+        groupList.add(group);
+        Contact contact = new Contact(name,ph_num,groupList);
         contact.setUser(user);
-        if (contact == null)
-            return new RequestResult("FAIL",
-                    new Contact());
-        else {
-            contactService.addContact(contact);
-            return new RequestResult("SUCSESS",
-                    contact);
-        }
+        return requestFactory(contact);
     }
 
     @RequestMapping("/updatecontact")
@@ -77,51 +72,30 @@ public class ContactController {
                                        @RequestParam(value="groupid", required=true) int groupid) {
         Group group = groupService.getGroupById(groupid);
         Contact contact = contactService.getContactById(contactid);
+        List<Group> groupList = new ArrayList<>();
+        groupList.add(group);
         contact.setName(name);
         contact.setPh_number(ph_num);
-        contact.setGroup(group);
-        if (contact == null)
-            return new RequestResult("FAIL",
-                    new Contact());
-        else {
-            contactService.updateContact(contact);
-            return new RequestResult("SUCSESS",
-                    contact);
-        }
+        contact.setGroup(groupList);
+        return requestFactory(contact);
     }
 
     @RequestMapping("/removecontact")
     public RequestResult removeContact(@RequestParam(value="id", required=false) int contactid) {
         Contact contact = contactService.getContactById(contactid);
-        if (contact == null)
-            return new RequestResult("FAIL",
-                    new Contact());
-        else
-            contactService.delContact(contact);
-            return new RequestResult("SUCSESS",
-                    contact);
+        return requestFactory(contact);
     }
 
     @RequestMapping("/getgroup")
     public RequestResult getGroup(@RequestParam(value="id", required=true) int groupid) {
         Group group = groupService.getGroupById(groupid);
-        if (group == null)
-            return new RequestResult("FAIL",
-                    new Group());
-        else
-            return new RequestResult("SUCSESS",
-                    group);
+        return requestFactory(group);
     }
 
     @RequestMapping("/getallgroup")
     public RequestResult getAllGroup(@RequestParam(value="username", required=false, defaultValue="User3") String username) {
         List<Group> groupList = groupService.getAllGroups(username);
-        if (groupList == null)
-            return new RequestResult("FAIL",
-                    new Contact());
-        else
-            return new RequestResult("SUCSESS",
-                    groupList);
+        return requestFactory(groupList);
     }
 
     @RequestMapping("/addgroup")
@@ -130,13 +104,7 @@ public class ContactController {
         Group group = new Group(name);
         User user = userService.getUserById(username);
         group.setUser(user);
-        if (group == null)
-            return new RequestResult("FAIL",
-                    new Group());
-        else
-            groupService.addGroup(group);
-            return new RequestResult("SUCSESS",
-                    group);
+        return requestFactory(group);
     }
 
     @RequestMapping("/updategroup")
@@ -144,25 +112,13 @@ public class ContactController {
                                      @RequestParam(value="name", required=true) String name) {
         Group group = groupService.getGroupById(groupid);
         group.setName(name);
-        if (group == null)
-            return new RequestResult("FAIL",
-                    new Group());
-        else
-        groupService.updateGroup(group);
-        return new RequestResult("SUCSESS",
-                group);
+        return requestFactory(group);
     }
 
     @RequestMapping("/removegroup")
     public RequestResult removeGroup(@RequestParam(value="id", required=false) int groupid) {
         Group group = groupService.getGroupById(groupid);
-        if (group == null)
-            return new RequestResult("FAIL",
-                    new Group());
-        else
-            groupService.delGroup(group);
-            return new RequestResult("SUCSESS",
-                   group);
+        return requestFactory(group);
     }
 }
 
