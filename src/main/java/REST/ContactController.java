@@ -62,6 +62,7 @@ public class ContactController {
         groupList.add(group);
         Contact contact = new Contact(name,ph_num,groupList);
         contact.setUser(user);
+        contactService.addContact(contact);
         return requestFactory(contact);
     }
 
@@ -77,12 +78,14 @@ public class ContactController {
         contact.setName(name);
         contact.setPh_number(ph_num);
         contact.setGroup(groupList);
+        contactService.updateContact(contact);
         return requestFactory(contact);
     }
 
     @RequestMapping("/removecontact")
     public RequestResult removeContact(@RequestParam(value="id", required=false) int contactid) {
         Contact contact = contactService.getContactById(contactid);
+        contactService.delContact(contact);
         return requestFactory(contact);
     }
 
@@ -104,6 +107,7 @@ public class ContactController {
         Group group = new Group(name);
         User user = userService.getUserById(username);
         group.setUser(user);
+        groupService.addGroup(group);
         return requestFactory(group);
     }
 
@@ -112,12 +116,14 @@ public class ContactController {
                                      @RequestParam(value="name", required=true) String name) {
         Group group = groupService.getGroupById(groupid);
         group.setName(name);
+        groupService.updateGroup(group);
         return requestFactory(group);
     }
 
     @RequestMapping("/removegroup")
     public RequestResult removeGroup(@RequestParam(value="id", required=false) int groupid) {
         Group group = groupService.getGroupById(groupid);
+        groupService.delGroup(group);
         return requestFactory(group);
     }
 }
